@@ -1,0 +1,43 @@
+{% extends "layout.html" %} {% block title %}Kirjaudu sisään{% endblock %} {%
+block content %}
+
+<div class="auth-form">
+
+{% if login %}
+
+<h2>Kirjaudu sisään</h2>
+<form action="/login" method="post">
+
+{% else %}
+
+<h2>Luo tili</h2>
+<form action="/signup" method="post">
+
+{% endif %}
+
+        <input type="text" name="username" required placeholder="Käyttäjänimi" />
+        <input type="password" name="password" required placeholder="Salasana" />
+
+        {% if login %}
+
+        <input type="submit" value="Kirjaudu" />
+        <div class="other">Ei tiliä? <a href="/signup">Luo tili.</a></div>
+
+        {% else %}
+
+        <input type="submit" value="Luo tili" />
+        <div class="other">Tili jo olemassa? <a href="/login">Kirjaudu sisään.</a></div>
+
+        {% endif %}
+
+    </form>
+
+    {% if error %}
+    <div class="error">{{  error  }}</div>
+    {% endif %}
+
+</div>
+
+
+
+{% endblock %}

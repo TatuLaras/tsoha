@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <title>{% block title %}{% endblock %} - Opiskelu</title>
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static',filename='global.css') }}"
+        />
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static',filename='auth_form.css') }}"
+        />
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static',filename='course.css') }}"
+        />
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static',filename='courses.css') }}"
+        />
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static',filename='join.css') }}"
+        />
+        <script src="https://kit.fontawesome.com/96042d4079.js" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <nav>
+            <a href="/"><i class="fa-solid fa-house"></i></a>
+            <div class="course-title">{% block course_title %}{% endblock %}</div>
+            {% if user %}
+            <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i></a>
+            {% endif %}
+        </nav>
+        <div class="content-wrapper">
+        {% block content %}{% endblock %}
+        </div>
+        <script src="{{ url_for('static',filename='main.js') }}"></script>
+    </body>
+</html>

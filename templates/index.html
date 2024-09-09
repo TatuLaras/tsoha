@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block title %}Kurssit{% endblock %}
+{% block content %}
+
+<h2>Omat kurssini</h3>
+<div class="courses">
+    {% for course in my_courses %}
+    <div class="course" onclick="window.location.href = '/course/{{course.id}}'">
+        <div class="color" style="--color: {{colors[course.id % colors_len]}}"></div>
+        <div class="info">
+            <div class="title">{{course.name}}</div>
+            <div class="creator">{{course.creator}}</div>
+        </div>
+        <div class="progress" style="--progress: 68%">
+            <div class="bar"></div>
+            <span class="num">68%</span>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-disabled">Ei kursseja.</div>
+    {% endfor %}
+</div>
+
+<h2>Kaikki kurssit</h3>
+<div class="courses">
+    {% for course in all_courses %}
+    <div class="course" onclick="window.location.href = '/course/{{course.id}}'">
+        <div class="color" style="--color: {{colors[course.id % colors_len]}}"></div>
+        <div class="info">
+            <div class="title">{{course.name}}</div>
+            <div class="creator">{{course.creator}}</div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-disabled">Ei kursseja.</div>
+    {% endfor %}
+</div>
+{% endblock %}

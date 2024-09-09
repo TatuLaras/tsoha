@@ -1,0 +1,76 @@
+{% extends "layout.html" %} {% block title %}{{course.name}}{% endblock %} {%
+block course_title %}{{course.name}}{% endblock %} {% block content %}
+<div class="course-page">
+    <div class="outline">
+        {% for article in articles %} {% if current_article and article.id ==
+        current_article.id %}
+        <div class="outline-item current" onclick="openArticle({{article.id}})">
+            {{article.title}}
+        </div>
+        {% else %}
+        <div class="outline-item" onclick="openArticle({{article.id}})">
+            {{article.title}}
+        </div>
+        {% endif %} {% else %}
+        <div class="text-disabled">Ei artikkeleja.</div>
+        {% endfor %}
+    </div>
+    <div class="content" id="article-content">
+        {% if current_article %}
+        <h1>{{current_article.title}}</h1>
+        {{current_article.content}} {% else %}
+        <div class="text-disabled">Valitse artikkeli vasemmalta.</div>
+        {% endif %}
+        <div class="exercises">
+            {% for text_exercise in text_exercises %}
+            <div class="exercise text">
+                <div class="top"></div>
+                <div class="question">{{text_exercise.question}}</div>
+                <form action="/answer/text/{{text_exercise.id}}" method="post">
+                    <input type="text" />
+                    <input type="submit" value="Tarkista" />
+                </form>
+            </div>
+            {% endfor %} {% for choice_exercise in choice_exercises %}
+            <div class="exercise choice">
+                <div class="top"></div>
+                <div class="question">{{choice_exercise.0.question}}</div>
+                <form
+                    action="/answer/choice/{{choice_exercise.0.id}}"
+                    method="post"
+                >
+                    <div class="choices">
+                        {% for choice in choice_exercise.1 %}
+                        <div>
+                            <input
+                                type="radio"
+                                name="answer"
+                                value="{{choice.id}}"
+                                id="{{choice_exercise.0.id}}-{{choice.id}}"
+                            />
+                            <label for="{{choice_exercise.0.id}}-{{choice.id}}"
+                                >{{choice.label}}</label
+                            >
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <input type="submit" value="Tarkista" />
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="settings">
+        <input
+            tabindex="-1"
+            type="range"
+            name="font-size"
+            min="50"
+            max="200"
+            value="100"
+            oninput="changeFontSize(event)"
+        />
+        <label for="font-size"><i class="fa-solid fa-font"></i></label>
+    </div>
+</div>
+{% endblock %}

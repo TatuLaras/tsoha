@@ -1,0 +1,17 @@
+.auth-form {
+    align-self: center;
+    padding: 1em 2em;
+    border-radius: 0.5em;
+    border: 2px solid var(--color-lightgray);
+    margin-top: 2em;
+}
+
+.auth-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.auth-form h2 {
+    margin-bottom: 1em;
+}

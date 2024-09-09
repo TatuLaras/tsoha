@@ -1,0 +1,14 @@
+{% extends "layout.html" %} {% block title %}Liity kurssille{% endblock %} {%
+block content %}
+<div class="join-course">
+    <h3>Liity kurssille {{course.course_name}}</h3>
+    <div class="creator">Luonut: {{course.creator}}</div>
+    {% if course.description %}
+    <p>{{course.description}}</p>
+    {% endif %}
+    <div class="buttons">
+        <a href="/" class="btn">Takaisin</a>
+        <a href="/join/{{course.id}}" class="btn primary">Liity</a>
+    </div>
+</div>
+{% endblock %}

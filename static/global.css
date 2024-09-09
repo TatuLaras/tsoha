@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+    --color-blue: #4b7bec;
+    --color-blue-dark: #3867d6;
+    --color-lightgray: #d1d8e0;
+    --color-lightergray: #e1e7ed;
+    --color-darkgray: #4b6584;
+}
+
+* {
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    height: 100vh;
+}
+
+input {
+    padding: 0.4em 0.6em;
+    font-size: 1rem;
+    border-radius: 0.2em;
+    border: 2px solid var(--color-lightgray);
+}
+
+input:focus {
+    outline: none;
+    border: 2px solid var(--color-blue);
+}
+
+input[type='submit'] {
+    align-self: flex-end;
+    border: none;
+    background-color: var(--color-blue);
+    color: white;
+    padding: 0.4em 0.6em;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 1em;
+}
+
+.btn.primary:hover,
+input[type='submit']:hover {
+    background-color: var(--color-blue-dark);
+    border-color: var(--color-blue-dark);
+}
+
+.btn:hover {
+    background-color: var(--color-lightergray);
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--color-lightergray);
+    position: sticky;
+    top: 0;
+}
+
+nav .course-title {
+    font-weight: 500;
+}
+
+h2 {
+    font-weight: 500;
+}
+
+nav a {
+    color: black;
+    padding: 0.6em;
+}
+
+.content-wrapper {
+    padding: 1em 2em;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex: 1;
+}
+
+.progress {
+    display: flex;
+    align-items: center;
+    padding: 1em;
+    padding-bottom: 0;
+    gap: 1em;
+}
+
+.progress .bar {
+    background-color: white;
+    height: 0.6em;
+    border-radius: 0.3em;
+    width: 100%;
+}
+
+.progress .num {
+    opacity: 0.7;
+}
+
+.progress .bar::before {
+    content: '';
+    display: block;
+    background-color: var(--color-blue);
+    width: var(--progress);
+    height: 100%;
+    border-radius: 0.3em;
+}
+
+.error {
+    background-color: #ffb3b7;
+    border: 2px solid #fc5c65;
+    border-radius: 0.4em;
+    padding: 0.4em 0.6em;
+    margin-bottom: 0.5em;
+    margin-top: 1.2em;
+}
+
+.btn {
+    border: 2px solid var(--color-lightgray);
+    border-radius: 0.2em;
+    padding: 0.4em 0.6em;
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+}
+
+.btn.primary {
+    border-color: var(--color-blue);
+    background-color: var(--color-blue);
+    color: white;
+}
+
+.text-disabled {
+    opacity: 0.7;
+}
+
+input[type='range'] {
+    -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+    width: 100%; /* Specific width is required for Firefox. */
+    background: transparent; /* Otherwise white in Chrome */
+    border: none;
+}
+
+input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+}
+
+input[type='range']:focus {
+    outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+}
+
+input[type='range']::-ms-track {
+    width: 100%;
+    cursor: pointer;
+
+    /* Hides the slider so custom styles can be added */
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+}
+
+/* Special styling for WebKit/Blink */
+input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 16px;
+    width: 12px;
+    border-radius: 6px 6px 0 0;
+    background: black;
+    cursor: pointer;
+    margin-top: -14px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+}
+
+/* All the same stuff for Firefox */
+input[type='range']::-moz-range-thumb {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: black;
+    cursor: pointer;
+}
+
+/* All the same stuff for IE */
+input[type='range']::-ms-thumb {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: black;
+    cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+    height: 5px;
+    cursor: pointer;
+    background: black;
+    border-radius: 2.5px;
+}
+
+input[type='range']::-moz-range-track {
+    height: 5px;
+    cursor: pointer;
+    background: black;
+    border-radius: 2.5px;
+}
+
+input[type='range']::-ms-track {
+    height: 5px;
+    cursor: pointer;
+    background: black;
+    border-radius: 2.5px;
+}
+
+input[type='range']::-ms-fill-lower {
+    background: #2a6495;
+    border: 0.2px solid #010101;
+    border-radius: 2.6px;
+    box-shadow:
+        1px 1px 1px #000000,
+        0px 0px 1px #0d0d0d;
+}

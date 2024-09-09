@@ -1,0 +1,114 @@
+.course-page {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    height: 100%;
+    --font-size: 1rem;
+}
+
+.outline {
+    width: 25em;
+}
+
+.outline-item {
+    padding: 0.4em;
+    padding-left: 0.8em;
+    cursor: pointer;
+}
+
+.outline-item.current {
+    border-left: 4px solid black;
+    font-weight: 500;
+}
+
+.course-page .content {
+    min-width: 16em;
+    max-width: 50em;
+
+    font-size: var(--font-size);
+}
+
+.settings {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    background-color: var(--color-lightergray);
+    display: flex;
+    align-items: center;
+    padding: 1.2em 1em 0.4em 0.6em;
+    border-radius: 0.4em 0 0 0;
+    color: black;
+    gap: 0.5em;
+}
+
+.settings i {
+    padding-bottom: 0.6em;
+}
+
+.settings > button {
+    background: none;
+    border: none;
+    color: white;
+    padding: 0.5em;
+    cursor: pointer;
+    font-size: 1.1rem;
+    background-color: var(--color-blue);
+    border-radius: 0.2rem;
+}
+
+.exercise {
+    background-color: var(--color-lightergray);
+    margin-top: 4em;
+    border-radius: 0.4rem;
+}
+
+.exercise .top {
+    height: 4em;
+    background-color: var(--color-blue);
+    border-radius: 0.4rem 0.4rem 0 0;
+}
+
+.exercise .question {
+    padding-top: 2em;
+    padding-left: 2em;
+    font-weight: 500;
+    font-size: 1.1em;
+}
+
+.exercise form {
+    padding-left: 2em;
+    padding-top: 1em;
+    padding-bottom: 2em;
+}
+
+.exercise input {
+    font-size: var(--font-size);
+}
+
+.exercise .choices {
+    display: flex;
+    flex-direction: column;
+}
+
+.exercise .choices div {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.2em 0;
+}
+
+.exercise .choices label {
+    cursor: pointer;
+}
+
+.exercise input[type='radio'] {
+    cursor: pointer;
+    border: 0px;
+    height: var(--font-size);
+    width: var(--font-size);
+}
+
+.exercise.choice input[type='submit'] {
+    margin-top: 1.4em;
+}
