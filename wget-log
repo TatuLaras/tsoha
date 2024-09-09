@@ -1,12 +1,0 @@
---2024-09-04 16:40:01--  https://github.com/hy-tsoha/local-pg/blob/master/pg-install.sh
-Loaded CA certificate '/etc/ssl/certs/ca-certificates.crt'
-Resolving github.com (github.com)... 140.82.121.3
-Connecting to github.com (github.com)|140.82.121.3|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: unspecified [text/html]
-Saving to: ‘pg-install.sh.1’
-
-pg-install.sh.1                                 [<=>                                                                                       ]       0  --.-KB/s               pg-install.sh.1                                 [ <=>                                                                                      ]  64,12K   310KB/s               pg-install.sh.1                                 [  <=>                                                                                     ] 384,12K   925KB/s               pg-install.sh.1                                 [   <=>                                                                                    ] 415,80K   971KB/s    in 0,4s    
-
-2024-09-04 16:40:02 (971 KB/s) - ‘pg-install.sh.1’ saved [425777]
-
