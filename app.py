@@ -13,3 +13,4 @@ db = SQLAlchemy(app)
 
 import auth_routes
 import course_routes
+import exercise_routes

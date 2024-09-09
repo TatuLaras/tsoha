@@ -23,22 +23,38 @@ block course_title %}{{course.name}}{% endblock %} {% block content %}
         {% endif %}
         <div class="exercises">
             {% for text_exercise in text_exercises %}
-            <div class="exercise text">
+            <div
+                class="exercise text {% if text_exercise.completed %}completed{% endif %}"
+                id="text-{{text_exercise.id}}"
+            >
                 <div class="top"></div>
                 <div class="question">{{text_exercise.question}}</div>
-                <form action="/answer/text/{{text_exercise.id}}" method="post">
-                    <input type="text" />
+                <form action="/answer/{{text_exercise.id}}" method="post">
+                    <input type="text" name="answer" />
+                    <input
+                        type="hidden"
+                        name="course_article_id"
+                        value="{{current_article.id}}"
+                    />
+                    <input
+                        type="hidden"
+                        name="course_id"
+                        value="{{course.id}}"
+                    />
                     <input type="submit" value="Tarkista" />
                 </form>
+                {% if text_exercise.completed %}
+                <div class="answer">{{text_exercise.answer}}</div>
+                {% endif %}
             </div>
             {% endfor %} {% for choice_exercise in choice_exercises %}
-            <div class="exercise choice">
+            <div
+                class="exercise choice {% if choice_exercise.0.completed %}completed{% endif %}"
+                id="choice-{{choice_exercise.0.id}}"
+            >
                 <div class="top"></div>
                 <div class="question">{{choice_exercise.0.question}}</div>
-                <form
-                    action="/answer/choice/{{choice_exercise.0.id}}"
-                    method="post"
-                >
+                <form action="/answer/{{choice_exercise.0.id}}" method="post">
                     <div class="choices">
                         {% for choice in choice_exercise.1 %}
                         <div>
@@ -47,7 +63,19 @@ block course_title %}{{course.name}}{% endblock %} {% block content %}
                                 name="answer"
                                 value="{{choice.id}}"
                                 id="{{choice_exercise.0.id}}-{{choice.id}}"
+                                required
                             />
+                            <input
+                                type="hidden"
+                                name="course_article_id"
+                                value="{{current_article.id}}"
+                            />
+                            <input
+                                type="hidden"
+                                name="course_id"
+                                value="{{course.id}}"
+                            />
+                            <input type="hidden" name="choice" />
                             <label for="{{choice_exercise.0.id}}-{{choice.id}}"
                                 >{{choice.label}}</label
                             >
@@ -56,6 +84,17 @@ block course_title %}{{course.name}}{% endblock %} {% block content %}
                     </div>
                     <input type="submit" value="Tarkista" />
                 </form>
+                {% if choice_exercise.0.completed %}
+                <div class="answer">
+                    {% for choice in choice_exercise.1 %}
+                    <div
+                        class="choice {% if choice.is_correct %}correct{% endif %}"
+                    >
+                        {{choice.label}}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
             {% endfor %}
         </div>

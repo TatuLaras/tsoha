@@ -62,7 +62,7 @@ def course(course_id):
     if not user:
         return redirect("/login")
 
-    # get course
+    # get course information
 
     query = """
         SELECT 
@@ -94,7 +94,7 @@ def course(course_id):
 
     # get extra things only needed for the actual course page
 
-    # outline
+    # outline / course articles
     query = "SELECT id, title FROM tl_course_article WHERE course_id = :course_id ORDER BY ordering ASC"
     articles = db.session.execute(text(query), {"course_id": course.id}).fetchall()
 
@@ -114,27 +114,45 @@ def course(course_id):
         # text exercises
 
         query = """
-            SELECT id, question
-            FROM tl_exercise_text
-            WHERE course_article_id = :course_article_id
+            SELECT e.id, e.question, e.answer,
+
+            CASE WHEN p.point IS NULL
+            THEN 0 ELSE 1
+            END AS completed
+
+            FROM tl_exercise_text AS e
+
+            LEFT JOIN tl_points AS p
+            ON p.user_id = :user_id AND p.point = e.id AND p.type = 1
+
+            WHERE e.course_article_id = :course_article_id
         """
         text_exercises = db.session.execute(
-            text(query), {"course_article_id": article_id}
+            text(query), {"course_article_id": article_id, "user_id": user.id}
         ).fetchall()
 
         # multiple choice exercises
 
         query = """
-            SELECT id, question
-            FROM tl_exercise_choice
-            WHERE course_article_id = :course_article_id
+            SELECT e.id, e.question,
+
+            CASE WHEN p.point IS NULL
+            THEN 0 ELSE 1
+            END AS completed
+
+            FROM tl_exercise_choice AS e
+
+            LEFT JOIN tl_points AS p
+            ON p.user_id = :user_id AND p.point = e.id AND p.type = 2
+
+            WHERE e.course_article_id = :course_article_id
         """
         questions = db.session.execute(
-            text(query), {"course_article_id": article_id}
+            text(query), {"course_article_id": article_id, "user_id": user.id}
         ).fetchall()
 
         for question in questions:
-            query = "SELECT id, label FROM tl_exercise_choice_option WHERE exercise_choice_id = :exercise_choice_id"
+            query = "SELECT id, label, is_correct FROM tl_exercise_choice_option WHERE exercise_choice_id = :exercise_choice_id"
             choices = db.session.execute(
                 text(query), {"exercise_choice_id": question.id}
             ).fetchall()

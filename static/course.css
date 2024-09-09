@@ -75,8 +75,9 @@
     font-size: 1.1em;
 }
 
-.exercise form {
-    padding-left: 2em;
+.exercise form,
+.exercise .answer {
+    padding-left: 2.2em;
     padding-top: 1em;
     padding-bottom: 2em;
 }
@@ -111,4 +112,21 @@
 
 .exercise.choice input[type='submit'] {
     margin-top: 1.4em;
+}
+
+.exercise.completed .top {
+    background-color: var(--color-green);
+}
+
+.exercise.completed form {
+    display: none;
+}
+
+.answer .choice {
+    opacity: 0.7;
+}
+
+.answer .choice.correct {
+    font-weight: 500;
+    opacity: 1;
 }

@@ -59,5 +59,9 @@ CREATE TABLE tl_exercise_choice_option (
 CREATE TABLE tl_points (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
-    exercise_id INTEGER NOT NULL
+    type INTEGER NOT NULL DEFAULT 0, -- 1 = text, 2 = choice
+    point INTEGER,
+    UNIQUE (point, type, user_id)
 );
+
+
