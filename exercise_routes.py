@@ -48,7 +48,6 @@ def answer(exercise_id):
 
     else:
         query = "SELECT 1 FROM tl_exercise_text WHERE id = :exercise_id AND answer = :answer"
-        print("answeri:", answer)
         is_correct = db.session.execute(
             text(query), {"exercise_id": exercise_id, "answer": answer}
         ).fetchone()

@@ -1,59 +1,8 @@
 from app import app, db
 from user import get_logged_in_user
-from flask import redirect, render_template, request
+from course import get_course
+from flask import redirect, render_template, request, session
 from sqlalchemy import text
-
-
-@app.route("/")
-def index():
-    user = get_logged_in_user(db)
-    if not user:
-        return redirect("/login")
-
-    # get my courses
-    query = """
-        SELECT 
-        c.id, c.name, c.description,
-        u.username AS creator
-
-        FROM tl_course_user AS cu 
-
-        LEFT JOIN tl_course AS c 
-        ON c.id = cu.course_id 
-
-        LEFT JOIN tl_user AS u
-        ON u.id = c.user_id
-
-        WHERE cu.user_id = :user_id
-    """
-    result = db.session.execute(text(query), {"user_id": user.id})
-    my_courses = result.fetchall()
-
-    # get all courses
-    query = """
-        SELECT 
-        c.id, c.name, c.description, 
-        u.username AS creator 
-
-        FROM tl_course AS c 
-
-        LEFT JOIN tl_user AS u 
-        ON u.id = c.user_id
-    """
-    result = db.session.execute(text(query))
-    all_courses = result.fetchall()
-
-    colors = ["#eb3b5a", "#fa8231", "#f7b731", "#20bf6b", "#0fb9b1"]
-    colors_len = len(colors)
-
-    return render_template(
-        "index.html",
-        user=True,
-        all_courses=all_courses,
-        my_courses=my_courses,
-        colors=colors,
-        colors_len=colors_len,
-    )
 
 
 @app.route("/course/<int:course_id>")
@@ -63,24 +12,10 @@ def course(course_id):
         return redirect("/login")
 
     # get course information
-
-    query = """
-        SELECT 
-        c.id, c.name, c.description, 
-        u.username AS creator 
-
-        FROM tl_course AS c 
-
-        LEFT JOIN tl_user AS u 
-        ON u.id = c.user_id
-
-        WHERE c.id = :course_id
-    """
-    result = db.session.execute(text(query), {"course_id": course_id})
-    course = result.fetchone()
+    course = get_course(db, course_id)
 
     if not course:
-        return redirect("/")
+        return "404: Course not found", 404
 
     # check if user is on course, if not show the join page instead of the actual course page
 
@@ -159,6 +94,11 @@ def course(course_id):
 
             choice_exercises.append((question, choices))
 
+    # there might be info in a session variable about a failed exercise
+    incorrect = session.get("incorrect", None)
+    if incorrect:
+        del session["incorrect"]
+
     return render_template(
         "course.html",
         course=course,
@@ -167,6 +107,7 @@ def course(course_id):
         current_article=current_article,
         text_exercises=text_exercises,
         choice_exercises=choice_exercises,
+        incorrect=incorrect,
     )
 
 
@@ -186,3 +127,57 @@ def join(course_id):
     db.session.execute(text(query), {"user_id": user.id, "course_id": course_id})
     db.session.commit()
     return redirect(f"/course/{course_id}")
+
+
+@app.route("/stats/<int:course_id>")
+def stats(course_id):
+    user = get_logged_in_user(db)
+    if not user:
+        return redirect("/login")
+
+    course = get_course(db, course_id)
+
+    if not course:
+        return "404: Course not found", 404
+
+    query = """
+        SELECT ca.id, ca.title,
+        CAST(
+        (
+            SELECT COUNT(*)
+
+            FROM tl_points AS p
+
+            LEFT JOIN tl_exercise_text AS set
+            ON set.id = p.point AND p.type = 1
+
+            LEFT JOIN tl_exercise_choice AS sec
+            ON sec.id = p.point AND p.type = 2
+
+            WHERE p.user_id = :user_id AND 
+            (sec.course_article_id = ca.id OR set.course_article_id = ca.id)
+        ) 
+        AS DECIMAL)
+        /
+        COUNT(*) 
+        AS percentage
+
+        FROM tl_course_article AS ca 
+
+        LEFT JOIN tl_exercise_text AS et
+        ON et.course_article_id = ca.id
+
+        LEFT JOIN tl_exercise_choice AS ec
+        ON ec.course_article_id = ca.id
+
+        WHERE course_id = :course_id
+
+        GROUP BY ca.id
+        ORDER BY ca.ordering ASC
+    """
+    stats = db.session.execute(
+        text(query), {"user_id": user.id, "course_id": course.id}
+    ).fetchall()
+    print(stats)
+
+    return render_template("stats.html", course=course, user=True, stats=stats)

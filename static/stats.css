@@ -1,0 +1,46 @@
+.stats-page .stat {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 60em;
+}
+
+.stats-page .stat .title {
+    padding-top: 0.5em;
+    padding-bottom: 0.1em;
+    padding-left: 0.8em;
+    cursor: pointer;
+    font-weight: 500;
+    width: 20em;
+    text-decoration: none;
+    color: black;
+}
+
+.stats-page .bar-container {
+    flex: 1;
+    min-width: 10em;
+    display: flex;
+}
+
+.stats-page .bar-container .percentage {
+    padding-top: 0.5em;
+    padding-bottom: 0.1em;
+    width: 4em;
+    border-right: 3px solid var(--color-lightgray);
+}
+
+.stats-page .bar-container .bar {
+    flex: 1;
+    position: relative;
+}
+
+.stats-page .bar-container .bar::before {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 0.3em;
+    left: 0;
+    height: 1em;
+    background-color: var(--color-blue);
+    width: var(--percentage);
+    border-radius: 0 0.2rem 0.2rem 0;
+}

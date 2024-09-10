@@ -1,0 +1,26 @@
+{% extends "layout.html" %} {% block title %}Tilastot, {{course.name}}{%
+endblock %} {% block course_title %}{{course.name}}{% endblock %} {% block
+content %}
+<div class="stats-page">
+    <div class="stats">
+        {% for stat in stats %}
+        <div class="stat" style="--percentage: {{stat.percentage * 100}}%">
+            <a class="title" href="/course/{{course.id}}?article={{stat.id}}"
+                >{{stat.title}}</a
+            >
+            <div class="bar-container">
+                <div class="percentage text-disabled">
+                    {{(stat.percentage * 100)|round(1)}}%
+                </div>
+                <div class="bar"></div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-disabled">Ei artikkeleja.</div>
+        {% endfor %}
+    </div>
+    <a href="/course/{{course.id}}" class="stats"
+        ><i class="fa-solid fa-file-lines"></i
+    ></a>
+</div>
+{% endblock %}

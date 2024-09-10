@@ -10,4 +10,8 @@ function changeFontSize(e) {
     articleElement.style.setProperty('--font-size', `${size / 100}rem`);
 }
 
+function hideThis(e) {
+    e.target.classList.add('hide');
+}
+
 const articleElement = document.querySelector('#article-content');

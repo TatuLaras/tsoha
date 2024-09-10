@@ -11,9 +11,9 @@
             <div class="title">{{course.name}}</div>
             <div class="creator">{{course.creator}}</div>
         </div>
-        <div class="progress" style="--progress: 68%">
+        <div class="progress" style="--progress: {{course.percentage * 100}}%">
             <div class="bar"></div>
-            <span class="num">68%</span>
+            <span class="num">{{ ( course.percentage * 100 ) | round(1)}}%</span>
         </div>
     </div>
     {% else %}

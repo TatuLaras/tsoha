@@ -118,6 +118,10 @@
     background-color: var(--color-green);
 }
 
+.exercise.incorrect .top {
+    background-color: var(--color-red);
+}
+
 .exercise.completed form {
     display: none;
 }
@@ -130,3 +134,4 @@
     font-weight: 500;
     opacity: 1;
 }
+

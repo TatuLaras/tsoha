@@ -1,5 +1,6 @@
 {% extends "layout.html" %} {% block title %}{{course.name}}{% endblock %} {%
 block course_title %}{{course.name}}{% endblock %} {% block content %}
+{{failed}}
 <div class="course-page">
     <div class="outline">
         {% for article in articles %} {% if current_article and article.id ==
@@ -24,7 +25,9 @@ block course_title %}{{course.name}}{% endblock %} {% block content %}
         <div class="exercises">
             {% for text_exercise in text_exercises %}
             <div
-                class="exercise text {% if text_exercise.completed %}completed{% endif %}"
+                class="exercise text 
+                {% if text_exercise.completed %}completed{% endif %}
+                "
                 id="text-{{text_exercise.id}}"
             >
                 <div class="top"></div>
@@ -111,5 +114,13 @@ block course_title %}{{course.name}}{% endblock %} {% block content %}
         />
         <label for="font-size"><i class="fa-solid fa-font"></i></label>
     </div>
+    <a href="/stats/{{course.id}}" class="stats"><i class="fa-solid fa-chart-simple"></i></a>
 </div>
+
+{% if incorrect %}
+<script>
+document.getElementById("{{incorrect}}").classList.add('incorrect');
+</script>
+{% endif %}
+
 {% endblock %}
