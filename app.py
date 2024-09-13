@@ -34,6 +34,8 @@ def index():
         ON u.id = c.user_id
 
         WHERE cu.user_id = :user_id
+
+        ORDER BY c.id DESC
     """
     result = db.session.execute(text(query), {"user_id": user.id})
     my_courses = result.fetchall()
@@ -48,6 +50,8 @@ def index():
 
         LEFT JOIN tl_user AS u 
         ON u.id = c.user_id
+
+        ORDER BY c.id DESC
     """
     result = db.session.execute(text(query))
     all_courses = result.fetchall()
@@ -65,10 +69,11 @@ def index():
         my_courses=my_courses,
         colors=colors,
         colors_len=colors_len,
-        skip_tutorial=skip,
+        show_tutorial=not skip,
     )
 
 
 import auth_routes
 import course_routes
 import exercise_routes
+import dashboard_routes

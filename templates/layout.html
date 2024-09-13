@@ -24,23 +24,27 @@
         />
         <link
             rel="stylesheet"
+            href="{{ url_for('static',filename='dashboard.css') }}"
+        />
+        <link
+            rel="stylesheet"
             href="{{ url_for('static',filename='join.css') }}"
         />
         <script src="https://kit.fontawesome.com/96042d4079.js" crossorigin="anonymous"></script>
     </head>
     <body>
         <nav>
-            <a href="/"><i class="fa-solid fa-house"></i></a>
+            <a href="/" title="Etusivu"><i class="fa-solid fa-house"></i></a>
             <div class="course-title">{% block course_title %}{% endblock %}</div>
             <div class="end">
             {% if user %}
                 {% if user.is_teacher %}
-                <a href="/dashboard" class="teacher-btn"><i class="fa-solid fa-chalkboard-user"></i></a>
-                    {% if not skip_tutorial %}
-                    <div class="tutorial" onclick="hideThis(event)">Voit siirtyä opettaja-näkymään tästä</div>
+                <a href="/dashboard" class="teacher-btn" title="Opettaja-näkymä"><i class="fa-solid fa-chalkboard-user"></i></a>
+                    {% if show_tutorial %}
+                <div class="tutorial" onclick="hideThis(event)">Voit siirtyä opettaja-näkymään tästä</div>
                     {% endif %}
                 {% endif %}
-                <a href="/logout" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i></a>
+                <a href="/logout" class="logout-btn" title="Kirjaudu ulos"><i class="fa-solid fa-right-from-bracket"></i></a>
             {% endif %}
             </div>
         </nav>

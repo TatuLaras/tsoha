@@ -1,15 +1,14 @@
 {% extends "layout.html" %} {% block title %}{{course.name}}{% endblock %} {%
 block course_title %}{{course.name}}{% endblock %} {% block content %}
-{{failed}}
 <div class="course-page">
     <div class="outline">
         {% for article in articles %} {% if current_article and article.id ==
         current_article.id %}
-        <div class="outline-item current" onclick="openArticle({{article.id}})">
+        <div class="outline-item current" onclick="setParam('article', {{article.id}})">
             {{article.title}}
         </div>
         {% else %}
-        <div class="outline-item" onclick="openArticle({{article.id}})">
+        <div class="outline-item" onclick="setParam('article', {{article.id}})">
             {{article.title}}
         </div>
         {% endif %} {% else %}

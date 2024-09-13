@@ -1,0 +1,181 @@
+{% extends "layout.html" %}
+{% block title %}Opettaja-näkymä{% endblock %}
+{% block content %}
+<div class="dashboard">
+    <div class="col inspector">
+        {% if inspector_item %}
+        <h2 class="title">{{inspector_item.0}}</h2>
+        {% endif %}
+        <div class="inspector-content">
+            {% if inspector_item %}
+
+
+                {% if inspector_item.1 == "course" %}
+            <form action="/update/course/{{inspector_item.2.id}}" method="post">
+
+                <div>
+                    <label for="name" required>Nimi</label>
+                    <input value="{{inspector_item.2.name}}"
+                        type="text" name="name" id="name">
+                </div>
+
+                <div>
+                    <label for="description">Kuvaus</label>
+                    <textarea 
+                        type="text" 
+                        name="description" 
+                        id="description"
+                        rows="12"
+                    >{{inspector_item.2.description if inspector_item.2.description else ''}}</textarea>
+                </div>
+
+                <input 
+                    type="hidden" 
+                    name="redirect_url" 
+                    value="/dashboard?course={{current_course.id}}">
+
+                <input type="submit" value="Tallenna">
+            </form>
+                {% endif %}
+
+
+
+                {% if inspector_item.1 == "article" %}
+            <form action="/update/article/{{inspector_item.2.id}}" method="post">
+
+                <div>
+                    <label for="title" required>Otsikko</label>
+                    <input value="{{inspector_item.2.title}}"
+                        type="text" name="title" id="title">
+                </div>
+
+                <div>
+                    <label for="content">Sisältö</label>
+                    <textarea 
+                        type="text" 
+                        name="content" 
+                        id="content"
+                        rows="12"
+                    >{{inspector_item.2.content}}</textarea>
+                </div>
+
+                <input 
+                    type="hidden" 
+                    name="redirect_url" 
+                    value="/dashboard?course={{current_course.id}}&article={{current_article.id}}">
+
+                <input type="submit" value="Tallenna">
+            </form>
+                {% endif %}
+
+
+
+                {% if inspector_item.1 == "exercise-text" %}
+            <form action="/update/text/{{inspector_item.2.id}}" method="post">
+
+                <div>
+                    <label for="question" required>Kysymys</label>
+                    <input value="{{inspector_item.2.question}}"
+                        type="text" name="question" id="question">
+                </div>
+
+
+                <div>
+                    <label for="answer" required>Vastaus</label>
+                    <input value="{{inspector_item.2.answer}}"
+                        type="text" name="answer" id="answer">
+                </div>
+
+                <input 
+                    type="hidden" 
+                    name="redirect_url" 
+                value="/dashboard?course={{current_course.id}}&article={{current_article.id}}&exercise={{current_exercise.1.id}}&type={{current_exercise.0}}">
+
+                <input type="submit" value="Tallenna">
+            </form>
+                {% endif %}
+
+        
+
+            {% else %}
+            <div class="text-disabled">Valitse kohde.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col">
+        <form class="add-btn" method="post" action="/add/course">
+            <button type="submit" title="Luo kurssi"><i class="fa-solid fa-plus"></i></button>
+        </form>
+
+        <h2 class="title">Kurssit</h2>
+        <div class="list">
+            {% for course in courses %}
+            <a 
+                href="/dashboard?course={{course.id}}"
+                class="item {% if course.id == current_course.id %}selected{% endif %}"
+            >{{course.name}}</a>
+            {% else %}
+            <div class="text-disabled">Ei kursseja.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col">
+        {% if current_course %}
+        <form class="add-btn" method="post" action="/add/article">
+            <input type="hidden" name="course_id" value="{{current_course.id}}">
+            <button type="submit" title="Luo artikkeli"><i class="fa-solid fa-plus"></i></button>
+        </form>
+        {% endif %}
+
+        <h2 class="title">Artikkelit</h2>
+        <div class="list">
+            {% for article in articles %}
+            <a
+                href="/dashboard?course={{current_course.id}}&article={{article.id}}"
+                class="item {% if article.id == current_article.id %}selected{% endif %}"
+            >{{article.title}}</a>
+            {% else %}
+                {% if inspector_item.1 == 'course' %}
+            <div class="text-disabled">Ei artikkeleja.</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col">
+        {% if current_article and current_course %}
+        <div class="multi-btn">
+            <div class="initial"><i class="fa-solid fa-plus"></i></div>
+            <form method="post" action="/add/exercise" class="exercise-text">
+                <input type="hidden" name="article_id" value="{{current_article.id}}">
+                <input type="hidden" name="course_id" value="{{current_course.id}}">
+                <input type="hidden" name="type" value="text">
+                <button type="submit" title="Luo tekstitehtävä"><i class="fa-solid fa-font"></i></button>
+            </form>
+            <form method="post" action="/add/exercise" class="exercise-choice">
+                <input type="hidden" name="article_id" value="{{current_article.id}}">
+                <input type="hidden" name="course_id" value="{{current_course.id}}">
+                <input type="hidden" name="type" value="choice">
+                <button type="submit" title="Luo monivalintatehtävä"><i class="fa-solid fa-list-ul"></i></button>
+            </form>
+        </div>
+        {% endif %}
+
+        <h2 class="title">Tehtävät</h2>
+        <div class="list">
+            {% for exercise in exercises %}
+            <a
+                href="/dashboard?course={{current_course.id}}&article={{current_article.id}}&exercise={{exercise.id}}&type={{exercise.type}}"
+                class="item {% if current_exercise and exercise.id == current_exercise.1.id and current_exercise.0 == exercise.type %}selected{% endif %}"
+            ><i class="fa-solid {{ 'fa-list-ul' if exercise.type == 'choice' else 'fa-font' }}"></i>{{exercise.question}}
+            </a>
+            {% else %}
+                {% if inspector_item.1 == 'article' %}
+            <div class="text-disabled">Ei tehtäviä.</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

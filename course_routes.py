@@ -25,7 +25,7 @@ def course(course_id):
     ).fetchone()
 
     if not has_joined:
-        return render_template("join.html", course=course)
+        return render_template("join.html", course=course, user=user)
 
     # get extra things only needed for the actual course page
 
@@ -35,6 +35,7 @@ def course(course_id):
 
     # current article (GET-params)
     current_article = None
+
     text_exercises = []
     choice_exercises = []
 
@@ -102,7 +103,7 @@ def course(course_id):
     return render_template(
         "course.html",
         course=course,
-        user=True,
+        user=user,
         articles=articles,
         current_article=current_article,
         text_exercises=text_exercises,
