@@ -50,7 +50,6 @@
     border: none;
     color: white;
     padding: 0.5em;
-    cursor: pointer;
     font-size: 1.1rem;
     background-color: var(--color-blue);
     border-radius: 0.2rem;
@@ -134,4 +133,3 @@
     font-weight: 500;
     opacity: 1;
 }
-

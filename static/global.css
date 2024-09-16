@@ -21,8 +21,13 @@ body {
     height: 100vh;
 }
 
+button {
+    cursor: pointer;
+}
+
 input,
-textarea {
+textarea,
+.choice-editor {
     padding: 0.4em 0.6em;
     font-size: 1rem;
     border-radius: 0.2em;
@@ -280,4 +285,8 @@ a.stats {
 .hide {
     opacity: 0;
     pointer-events: none;
+}
+
+label {
+    margin-bottom: 0.2em;
 }

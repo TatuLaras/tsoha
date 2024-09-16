@@ -97,6 +97,39 @@
 
         
 
+                {% if inspector_item.1 == "exercise-choice" %}
+            <form action="/update/choice/{{inspector_item.2.id}}" method="post">
+
+                <div>
+                    <label for="question" required>Kysymys</label>
+                    <input value="{{inspector_item.2.question}}"
+                        type="text" name="question" id="question">
+                </div>
+
+                <div>Vaihtoehdot</div>
+                <div class="choice-editor" id="choice-editor">
+                    <div class="text-disabled">Ei vaihtoehtoja.</div>
+                </div>
+
+                <div class="add-choice">
+                    <input type="checkbox" id="choice-iscorrect-input" title="Oikea vastaus">
+                    <input type="text" id="choice-label-input" placeholder="Vaihtoehto">
+                    <button class="btn primary" onclick="addChoice(event)"><i class="fa-solid fa-plus"></i></button>
+                </div>
+
+                <input type="hidden" name="choices" value="" id="choices-data">
+
+                <input 
+                    type="hidden" 
+                    name="redirect_url" 
+                value="/dashboard?course={{current_course.id}}&article={{current_article.id}}&exercise={{current_exercise.1.id}}&type={{current_exercise.0}}">
+
+                <input type="submit" value="Tallenna">
+            </form>
+                {% endif %}
+
+
+
             {% else %}
             <div class="text-disabled">Valitse kohde.</div>
             {% endif %}
@@ -178,4 +211,19 @@
         </div>
     </div>
 </div>
+<script src="{{ url_for('static',filename='choice_editor.js') }}"></script>
+<script>
+
+    // juh ...
+    choices = [
+        {% if current_exercise %}
+            {% for choice in current_exercise.2 %}
+        {label: "{{choice.label}}", is_correct: {{"true" if choice.is_correct else "false"}}},
+            {% endfor %}
+        {% endif %}
+    ];
+
+
+    refreshChoices();
+</script>
 {% endblock %}

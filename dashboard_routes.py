@@ -1,7 +1,7 @@
 from app import app, db
 from user import get_logged_in_user
 from course import get_course
-from flask import redirect, render_template, request, session
+from flask import json, redirect, render_template, request, session
 from sqlalchemy import text
 
 
@@ -103,7 +103,16 @@ def dashboard():
                 text(query), {"id": current_exercise_id}
             ).fetchone()
 
-            current_exercise = ("choice", exercise, [])
+            query = """
+                SELECT label, is_correct
+                FROM tl_exercise_choice_option
+                WHERE exercise_choice_id = :exercise_choice_id
+            """
+            choices = db.session.execute(
+                text(query), {"exercise_choice_id": current_exercise_id}
+            ).fetchall()
+
+            current_exercise = ("choice", exercise, choices)
             inspector_item = (
                 "Muokkaa monivalintatehtävää",
                 "exercise-choice",
@@ -322,12 +331,94 @@ def update_exercise_text(exercise_id):
 
     # do it
 
-    query = (
-        "UPDATE tl_exercise_text SET question = :question, answer = :answer WHERE id = :id"
-    )
+    query = "UPDATE tl_exercise_text SET question = :question, answer = :answer WHERE id = :id"
     db.session.execute(
         text(query), {"id": exercise_id, "question": question, "answer": answer}
     )
+    db.session.commit()
+
+    redirect_url = request.form.get("redirect_url", None)
+    if redirect_url:
+        return redirect(redirect_url)
+
+    return redirect("/")
+
+
+@app.route("/update/choice/<int:exercise_id>", methods=["POST"])
+def update_exercise_choice(exercise_id):
+    user = get_logged_in_user(db)
+    if not user:
+        return redirect("/login")
+
+    # ensure that the user is a teacher and owns the course the exercise belongs to
+
+    query = """
+        SELECT 1 
+
+        FROM tl_exercise_choice AS ec
+
+        LEFT JOIN tl_course_article AS ca
+        ON ca.id = ec.course_article_id
+
+        LEFT JOIN tl_course AS c 
+        ON c.id = ca.course_id 
+
+        WHERE ec.id = :id AND c.user_id = :user_id
+    """
+
+    is_own = db.session.execute(
+        text(query), {"id": exercise_id, "user_id": user.id}
+    ).fetchone()
+
+    if not user.is_teacher or not is_own:
+        return "403: Forbidden", 403
+
+    # ensure that all the necessary data is present and valid
+
+    question = request.form.get("question", None)
+
+    #  NOTE: Here we do something iffy. We use two different arrays for the labels and "is_correct" field.
+    #   Form arrays are quaranteed to be in the order they are in the document however, so I don't see an issue with this.
+    #   Also flask doesn't seem to support multidimensional arrays from forms.
+
+    choices = request.form.get("choices", None)
+
+    if not question or len(question) == 0:
+        return "400: Bad Request", 400
+
+    # do it
+
+    query = "UPDATE tl_exercise_choice SET question = :question WHERE id = :id"
+    db.session.execute(text(query), {"id": exercise_id, "question": question})
+
+    # delete all old choices, just easier this way
+    query = "DELETE FROM tl_exercise_choice_option WHERE exercise_choice_id = :id"
+    db.session.execute(text(query), {"id": exercise_id})
+
+    if choices:
+        # insert choices
+
+        choices = json.loads(choices)
+
+        # collecting all choices (options) into a single insert query
+        values = ""
+
+        for choice in choices:
+            if "label" not in choice or "is_correct" not in choice:
+                continue
+
+            choice_label = choice["label"].strip()
+            if len(choice_label) == 0:
+                continue
+
+            comma = "," if len(values) > 0 else ""
+
+            values = f"{values}{comma}(:id, '{choice['label']}', {'TRUE' if choice['is_correct'] else 'FALSE'})"
+
+        if len(values) != 0:
+            query = f"INSERT INTO tl_exercise_choice_option (exercise_choice_id, label, is_correct) VALUES {values}"
+            db.session.execute(text(query), {"id": exercise_id})
+
     db.session.commit()
 
     redirect_url = request.form.get("redirect_url", None)

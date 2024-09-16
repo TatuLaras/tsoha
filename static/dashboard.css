@@ -96,7 +96,6 @@
     height: 3em;
     border-radius: 50%;
     font-size: 1.1rem;
-    cursor: pointer;
     transition: background 0.1s ease-out;
 }
 
@@ -129,6 +128,7 @@
     right: 0;
     margin-inline: auto;
     transition: opacity 0.15s ease-out;
+    cursor: pointer;
 }
 
 .multi-btn:hover .exercise-choice button {
@@ -153,6 +153,52 @@
     transition:
         transform 0.1s ease-out,
         border-radius 0.1s ease-out;
+}
+
+.choice-editor {
+    margin-top: -0.8em;
+}
+
+.choice-editor .choice {
+    display: flex;
+    align-items: center;
+}
+
+.choice-editor .choice button {
+    border: none;
+    background: none;
+    padding: 0.8em;
+    margin-left: 0.4em;
+}
+
+.choice-editor .choice .label {
+    flex: 1;
+    opacity: 0.7;
+}
+
+.choice-editor .choice.correct .label {
+    font-weight: 500;
+    opacity: 1;
+}
+
+.add-choice {
+    flex-direction: row !important;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.add-choice input[type='checkbox'] {
+    transform: scale(1.5);
+}
+
+.add-choice button {
+    padding: 0.6em 1em;
+    border: none;
+}
+
+#choice-label-input {
+    width: 3em;
+    flex: 1;
 }
 
 @media (max-width: 1028px) {
