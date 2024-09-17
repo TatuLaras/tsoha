@@ -1,0 +1,87 @@
+from app import app, db
+from user import get_logged_in_user
+from course import get_course
+from flask import redirect, render_template, request, session
+from sqlalchemy import text
+
+
+@app.route("/article", methods=["POST"])
+def add_article():
+    user = get_logged_in_user(db)
+    if not user:
+        return redirect("/login")
+
+    course_id = request.form.get("course_id", None)
+
+    if not course_id:
+        return "400: Bad Request", 400
+
+    # ensure that the user is a teacher and owns the course
+
+    query = "SELECT 1 FROM tl_course WHERE id = :id AND user_id = :user_id"
+    is_own = db.session.execute(
+        text(query), {"id": course_id, "user_id": user.id}
+    ).fetchone()
+
+    if not user.is_teacher or not is_own:
+        return "403: Forbidden", 403
+
+    query = "INSERT INTO tl_course_article (course_id, title, content) VALUES (:course_id, 'Uusi artikkeli', '') RETURNING id"
+    article = db.session.execute(text(query), {"course_id": course_id}).fetchone()
+    if not article:
+        return "500: Internal Server Error", 500
+
+    db.session.commit()
+
+    return redirect(f"/dashboard?course={course_id}&article={article.id}")
+
+
+@app.route("/article/update/<int:article_id>", methods=["POST"])
+def update_article(article_id):
+    user = get_logged_in_user(db)
+    if not user:
+        return redirect("/login")
+
+    # ensure that the user is a teacher and owns the course the article belongs to
+
+    query = """
+        SELECT 1 
+
+        FROM tl_course_article AS a 
+
+        LEFT JOIN tl_course AS c 
+        ON c.id = a.course_id 
+
+        WHERE a.id = :id AND c.user_id = :user_id
+    """
+
+    is_own = db.session.execute(
+        text(query), {"id": article_id, "user_id": user.id}
+    ).fetchone()
+
+    if not user.is_teacher or not is_own:
+        return "403: Forbidden", 403
+
+    # ensure that all the necessary data is present and valid
+
+    title = request.form.get("title", None)
+    content = request.form.get("content", "")
+
+    if not title or len(title) == 0:
+        return "400: Bad Request", 400
+
+    # do it
+
+    query = (
+        "UPDATE tl_course_article SET title = :title, content = :content WHERE id = :id"
+    )
+    db.session.execute(
+        text(query), {"id": article_id, "title": title, "content": content}
+    )
+    db.session.commit()
+
+    redirect_url = request.form.get("redirect_url", None)
+    if redirect_url:
+        return redirect(redirect_url)
+
+    return redirect("/")

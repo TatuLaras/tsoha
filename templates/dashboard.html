@@ -41,7 +41,7 @@
 
 
                 {% if inspector_item.1 == "article" %}
-            <form action="/update/article/{{inspector_item.2.id}}" method="post">
+            <form action="/article/update/{{inspector_item.2.id}}" method="post">
 
                 <div>
                     <label for="title" required>Otsikko</label>
@@ -71,7 +71,7 @@
 
 
                 {% if inspector_item.1 == "exercise-text" %}
-            <form action="/update/text/{{inspector_item.2.id}}" method="post">
+            <form action="/exercise/text/update/{{inspector_item.2.id}}" method="post">
 
                 <div>
                     <label for="question" required>Kysymys</label>
@@ -98,7 +98,7 @@
         
 
                 {% if inspector_item.1 == "exercise-choice" %}
-            <form action="/update/choice/{{inspector_item.2.id}}" method="post">
+            <form action="/exercise/choice/update/{{inspector_item.2.id}}" method="post">
 
                 <div>
                     <label for="question" required>Kysymys</label>
@@ -169,7 +169,7 @@
 
     <div class="col">
         {% if current_course %}
-        <form class="add-btn" method="post" action="/add/article">
+        <form class="add-btn" method="post" action="/article">
             <input type="hidden" name="course_id" value="{{current_course.id}}">
             <button type="submit" title="Luo artikkeli"><i class="fa-solid fa-plus"></i></button>
         </form>
@@ -193,13 +193,13 @@
         {% if current_article and current_course %}
         <div class="multi-btn">
             <div class="initial"><i class="fa-solid fa-plus"></i></div>
-            <form method="post" action="/add/exercise" class="exercise-text">
+            <form method="post" action="/exercise" class="exercise-text">
                 <input type="hidden" name="article_id" value="{{current_article.id}}">
                 <input type="hidden" name="course_id" value="{{current_course.id}}">
                 <input type="hidden" name="type" value="text">
                 <button type="submit" title="Luo tekstitehtävä"><i class="fa-solid fa-font"></i></button>
             </form>
-            <form method="post" action="/add/exercise" class="exercise-choice">
+            <form method="post" action="/exercise" class="exercise-choice">
                 <input type="hidden" name="article_id" value="{{current_article.id}}">
                 <input type="hidden" name="course_id" value="{{current_course.id}}">
                 <input type="hidden" name="type" value="choice">

@@ -77,3 +77,4 @@ import auth_routes
 import course_routes
 import exercise_routes
 import dashboard_routes
+import article_routes
