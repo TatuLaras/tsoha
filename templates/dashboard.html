@@ -50,6 +50,12 @@
                 </div>
 
                 <div>
+                    <label for="ordering" required>Järjestysluku</label>
+                    <input value="{{inspector_item.2.ordering}}"
+                        type="number" name="ordering" id="ordering">
+                </div>
+
+                <div>
                     <label for="content">Sisältö</label>
                     <textarea 
                         type="text" 
@@ -156,6 +162,7 @@
                         type="hidden" 
                         name="redirect_url" 
                         value="/dashboard">
+
                     <button class="delete" type="submit" title="Poista kurssi">
                         <i class="fa-solid fa-trash"></i>
                     </button>
@@ -181,7 +188,19 @@
             <a
                 href="/dashboard?course={{current_course.id}}&article={{article.id}}"
                 class="item {% if article.id == current_article.id %}selected{% endif %}"
-            >{{article.title}}</a>
+            >
+                <span>{{article.title}}</span>
+                <form action="/article/delete/{{article.id}}" method="post">
+                    <input 
+                        type="hidden" 
+                        name="redirect_url" 
+                        value="/dashboard">
+
+                    <button class="delete" type="submit" title="Poista artikkeli">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
+            </a>
             {% else %}
                 {% if inspector_item.1 == 'course' %}
             <div class="text-disabled">Ei artikkeleja.</div>
@@ -214,7 +233,21 @@
             <a
                 href="/dashboard?course={{current_course.id}}&article={{current_article.id}}&exercise={{exercise.id}}&type={{exercise.type}}"
                 class="item {% if current_exercise and exercise.id == current_exercise.1.id and current_exercise.0 == exercise.type %}selected{% endif %}"
-            ><i class="fa-solid {{ 'fa-list-ul' if exercise.type == 'choice' else 'fa-font' }}"></i>{{exercise.question}}
+            >
+
+                <span><i class="fa-solid {{ 'fa-list-ul' if exercise.type == 'choice' else 'fa-font' }}"></i>{{exercise.question}}</span>
+
+                <form action="/exercise/{{exercise.type}}/delete/{{exercise.id}}" method="post">
+                    <input 
+                        type="hidden" 
+                        name="redirect_url" 
+                        value="/dashboard">
+
+                    <button class="delete" type="submit" title="Poista artikkeli">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
+
             </a>
             {% else %}
                 {% if inspector_item.1 == 'article' %}

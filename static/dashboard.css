@@ -225,6 +225,7 @@
 }
 
 button.delete {
+    border-radius: 0.2rem;
     opacity: 0;
     pointer-events: none;
     color: var(--color-red);

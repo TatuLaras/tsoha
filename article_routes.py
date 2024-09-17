@@ -66,17 +66,26 @@ def update_article(article_id):
 
     title = request.form.get("title", None)
     content = request.form.get("content", "")
+    ordering = request.form.get("ordering", "0")
+
+    try:
+        ordering = int(ordering)
+    except ValueError:
+        return "400: Bad Request", 400
 
     if not title or len(title) == 0:
         return "400: Bad Request", 400
 
     # do it
 
-    query = (
-        "UPDATE tl_course_article SET title = :title, content = :content WHERE id = :id"
-    )
+    query = """
+        UPDATE tl_course_article 
+        SET title = :title, content = :content, ordering = :ordering 
+        WHERE id = :id
+    """
     db.session.execute(
-        text(query), {"id": article_id, "title": title, "content": content}
+        text(query),
+        {"id": article_id, "title": title, "content": content, "ordering": ordering},
     )
     db.session.commit()
 
@@ -85,3 +94,47 @@ def update_article(article_id):
         return redirect(redirect_url)
 
     return redirect("/")
+
+
+@app.route("/article/delete/<int:article_id>", methods=["POST"])
+def article_delete(article_id):
+    user = get_logged_in_user(db)
+    if not user:
+        return redirect("/login")
+
+    # ensure that the user is a teacher and owns the course
+
+    query = """
+        SELECT 1 
+
+        FROM tl_course_article AS a 
+
+        LEFT JOIN tl_course AS c 
+        ON c.id = a.course_id 
+
+        WHERE a.id = :id AND c.user_id = :user_id
+    """
+
+    is_own = db.session.execute(
+        text(query), {"id": article_id, "user_id": user.id}
+    ).fetchone()
+
+    if not user.is_teacher or not is_own:
+        return "403: Forbidden", 403
+
+    confirmed = request.form.get("confirmed", None)
+    redirect_url = request.form.get("redirect_url", "/")
+
+    if not confirmed:
+        return render_template(
+            "delete_confirmation.html",
+            item_title=f"artikkeli",
+            return_url=redirect_url,
+            action=f"/article/delete/{article_id}",
+        )
+
+    query = "DELETE FROM tl_course_article WHERE id = :id"
+    db.session.execute(text(query), {"id": article_id})
+    db.session.commit()
+
+    return redirect(redirect_url)

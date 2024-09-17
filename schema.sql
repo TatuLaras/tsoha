@@ -25,7 +25,7 @@ CREATE TABLE tl_course_user (
 DROP TABLE IF EXISTS tl_course_article;
 CREATE TABLE tl_course_article (
     id SERIAL PRIMARY KEY,
-    ordering SERIAL NOT NULL,
+    ordering SERIAL NOT NULL DEFAULT 0,
     course_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     content TEXT NOT NULL

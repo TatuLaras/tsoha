@@ -30,7 +30,13 @@ def course(course_id):
     # get extra things only needed for the actual course page
 
     # outline / course articles
-    query = "SELECT id, title FROM tl_course_article WHERE course_id = :course_id ORDER BY ordering ASC"
+    query = """
+        SELECT id, title 
+
+        FROM tl_course_article 
+        WHERE course_id = :course_id 
+        ORDER BY ordering ASC, id ASC
+    """
     articles = db.session.execute(text(query), {"course_id": course.id}).fetchall()
 
     # current article (GET-params)

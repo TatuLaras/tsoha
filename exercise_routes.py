@@ -1,6 +1,7 @@
 from app import app, db
 from user import get_logged_in_user
-from flask import json, redirect, request, session
+from course import get_course
+from flask import json, redirect, request, session, render_template
 from sqlalchemy import text
 
 
@@ -126,11 +127,8 @@ def update_exercise_text(exercise_id):
     )
     db.session.commit()
 
-    redirect_url = request.form.get("redirect_url", None)
-    if redirect_url:
-        return redirect(redirect_url)
-
-    return redirect("/")
+    redirect_url = request.form.get("redirect_url", "/")
+    return redirect(redirect_url)
 
 
 @app.route("/exercise/choice/update/<int:exercise_id>", methods=["POST"])
@@ -210,11 +208,8 @@ def update_exercise_choice(exercise_id):
 
     db.session.commit()
 
-    redirect_url = request.form.get("redirect_url", None)
-    if redirect_url:
-        return redirect(redirect_url)
-
-    return redirect("/")
+    redirect_url = request.form.get("redirect_url", "/")
+    return redirect(redirect_url)
 
 
 @app.route("/exercise", methods=["POST"])
@@ -281,3 +276,59 @@ def add_exercise():
     return redirect(
         f"/dashboard?course={course_id}&article={course_article_id}&exercise={exercise.id}&type={exercise_type}"
     )
+
+
+@app.route(
+    "/exercise/<string:exercise_type>/delete/<int:exercise_id>", methods=["POST"]
+)
+def delete_exercise(exercise_type, exercise_id):
+    if exercise_type not in ["text", "choice"]:
+        return "404: Not Found", 404
+
+    table = f"tl_exercise_{exercise_type}"
+
+    user = get_logged_in_user(db)
+    if not user:
+        return redirect("/login")
+
+    # ensure that the user is a teacher and owns the course
+
+    query = f"""
+        SELECT 1 
+
+        FROM {table} AS e
+
+        LEFT JOIN tl_course_article AS ca
+        ON ca.id = e.course_article_id
+
+        LEFT JOIN tl_course AS c 
+        ON c.id = ca.course_id 
+
+        WHERE e.id = :id AND c.user_id = :user_id
+    """
+
+    is_own = db.session.execute(
+        text(query), {"id": exercise_id, "user_id": user.id}
+    ).fetchone()
+
+    if not user.is_teacher or not is_own:
+        return "403: Forbidden", 403
+
+    confirmed = request.form.get("confirmed", None)
+    redirect_url = request.form.get("redirect_url", "/")
+
+    if not confirmed:
+        return render_template(
+            "delete_confirmation.html",
+            item_title=(
+                "monivalintatehtävä" if exercise_type == "choice" else "tekstitehtävä"
+            ),
+            return_url=redirect_url,
+            action=f"/exercise/{exercise_type}/delete/{exercise_id}",
+        )
+
+    query = f"DELETE FROM {table} WHERE id = :id"
+    db.session.execute(text(query), {"id": exercise_id})
+    db.session.commit()
+
+    return redirect(redirect_url)

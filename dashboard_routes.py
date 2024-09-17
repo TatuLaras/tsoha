@@ -45,7 +45,12 @@ def dashboard():
         inspector_item = ("Muokkaa kurssia", "course", current_course)
 
         # get articles of current course
-        query = "SELECT id, course_id, title, content FROM tl_course_article WHERE course_id = :course_id"
+        query = """
+            SELECT id, course_id, title, content, ordering 
+            FROM tl_course_article 
+            WHERE course_id = :course_id 
+            ORDER BY ordering ASC, id ASC
+        """
         articles = db.session.execute(
             text(query), {"course_id": current_course_id}
         ).fetchall()
@@ -55,9 +60,11 @@ def dashboard():
             raise NameError()
 
         # get current article
-        query = (
-            "SELECT id, course_id, title, content FROM tl_course_article WHERE id = :id"
-        )
+        query = """
+            SELECT id, course_id, title, content, ordering 
+            FROM tl_course_article 
+            WHERE id = :id
+        """
         current_article = db.session.execute(
             text(query), {"id": current_article_id}
         ).fetchone()
