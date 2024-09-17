@@ -11,7 +11,7 @@
 
 
                 {% if inspector_item.1 == "course" %}
-            <form action="/update/course/{{inspector_item.2.id}}" method="post">
+            <form action="/course/update/{{inspector_item.2.id}}" method="post">
 
                 <div>
                     <label for="name" required>Nimi</label>
@@ -114,7 +114,9 @@
                 <div class="add-choice">
                     <input type="checkbox" id="choice-iscorrect-input" title="Oikea vastaus">
                     <input type="text" id="choice-label-input" placeholder="Vaihtoehto">
-                    <button class="btn primary" onclick="addChoice(event)"><i class="fa-solid fa-plus"></i></button>
+                    <button class="btn primary" onclick="addChoice(event)">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
                 </div>
 
                 <input type="hidden" name="choices" value="" id="choices-data">
@@ -137,7 +139,7 @@
     </div>
 
     <div class="col">
-        <form class="add-btn" method="post" action="/add/course">
+        <form class="add-btn" method="post" action="/course">
             <button type="submit" title="Luo kurssi"><i class="fa-solid fa-plus"></i></button>
         </form>
 
@@ -147,7 +149,18 @@
             <a 
                 href="/dashboard?course={{course.id}}"
                 class="item {% if course.id == current_course.id %}selected{% endif %}"
-            >{{course.name}}</a>
+            >
+                <span>{{course.name}}</span>
+                <form action="/course/delete/{{course.id}}" method="post">
+                    <input 
+                        type="hidden" 
+                        name="redirect_url" 
+                        value="/dashboard">
+                    <button class="delete" type="submit" title="Poista kurssi">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
+            </a>
             {% else %}
             <div class="text-disabled">Ei kursseja.</div>
             {% endfor %}

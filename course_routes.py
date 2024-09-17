@@ -5,7 +5,7 @@ from flask import redirect, render_template, request, session
 from sqlalchemy import text
 
 
-@app.route("/course/<int:course_id>")
+@app.route("/course/<int:course_id>", methods=["GET"])
 def course(course_id):
     user = get_logged_in_user(db)
     if not user:
@@ -112,7 +112,7 @@ def course(course_id):
     )
 
 
-@app.route("/join/<int:course_id>")
+@app.route("/join/<int:course_id>", methods=["GET"])
 def join(course_id):
     user = get_logged_in_user(db)
     if not user:
@@ -130,7 +130,7 @@ def join(course_id):
     return redirect(f"/course/{course_id}")
 
 
-@app.route("/stats/<int:course_id>")
+@app.route("/stats/<int:course_id>", methods=["GET"])
 def stats(course_id):
     user = get_logged_in_user(db)
     if not user:
@@ -182,3 +182,103 @@ def stats(course_id):
     print(stats)
 
     return render_template("stats.html", course=course, user=True, stats=stats)
+
+
+@app.route("/course/update/<int:course_id>", methods=["POST"])
+def update_course(course_id):
+    user = get_logged_in_user(db)
+    if not user:
+        return redirect("/login")
+
+    # ensure that the user 1. owns the course 2. is a teacher
+
+    query = "SELECT 1 FROM tl_course WHERE user_id = :user_id AND id = :id"
+    is_own = db.session.execute(
+        text(query), {"user_id": user.id, "id": course_id}
+    ).fetchone()
+
+    if not user.is_teacher or not is_own:
+        return "403: Forbidden", 403
+
+    # ensure that all the necessary data is present and valid
+
+    name = request.form.get("name", None)
+    description = request.form.get("description", "")
+
+    if not name or len(name) == 0:
+        return "400: Bad Request", 400
+
+    # do it
+
+    query = (
+        "UPDATE tl_course SET name = :name, description = :description WHERE id = :id"
+    )
+    db.session.execute(
+        text(query), {"id": course_id, "name": name, "description": description}
+    )
+    db.session.commit()
+
+    redirect_url = request.form.get("redirect_url", None)
+    if redirect_url:
+        return redirect(redirect_url)
+
+    return redirect("/")
+
+
+@app.route("/course", methods=["POST"])
+def add_course():
+    user = get_logged_in_user(db)
+    if not user:
+        return redirect("/login")
+
+    if not user.is_teacher:
+        return "403: Forbidden", 403
+
+    query = "INSERT INTO tl_course (user_id, name) VALUES (:user_id, 'Uusi kurssi') RETURNING id"
+    course = db.session.execute(text(query), {"user_id": user.id}).fetchone()
+    if not course:
+        return "500: Internal Server Error", 500
+
+    db.session.commit()
+
+    return redirect(f"/dashboard?course={course.id}")
+
+
+@app.route("/course/delete/<int:course_id>", methods=["POST"])
+def delete_course(course_id):
+
+    user = get_logged_in_user(db)
+    if not user:
+        return redirect("/login")
+
+    # ensure that the user is a teacher and owns the course
+
+    query = "SELECT 1 FROM tl_course WHERE id = :id AND user_id = :user_id"
+
+    is_own = db.session.execute(
+        text(query), {"id": course_id, "user_id": user.id}
+    ).fetchone()
+
+    if not user.is_teacher or not is_own:
+        return "403: Forbidden", 403
+
+    confirmed = request.form.get("confirmed", None)
+    redirect_url = request.form.get("redirect_url", None)
+
+    if not confirmed:
+        course = get_course(db, course_id)
+        if not course:
+            return "500: Internal Server Error", 500
+
+        return render_template(
+            "delete_confirmation.html",
+            item_title=f"kurssi {course.name}",
+            return_url=redirect_url if redirect_url else "/",
+            action=f"/course/delete/{course_id}",
+        )
+
+    query = "DELETE FROM tl_course WHERE id = :id"
+    db.session.execute(text(query), {"id": course_id})
+    db.session.commit()
+
+    return redirect(redirect_url if redirect_url else "/")

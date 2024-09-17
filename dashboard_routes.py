@@ -14,7 +14,7 @@ def dashboard():
     if not user.is_teacher:
         return "403: Forbidden", 403
 
-    # get all possible get params (all are optional)
+    # get params (all are optional)
     current_course_id = request.args.get("course", None)
     current_article_id = request.args.get("article", None)
     current_exercise_id = request.args.get("exercise", None)
@@ -147,66 +147,6 @@ def dashboard():
         current_exercise=current_exercise,
         inspector_item=inspector_item,
     )
-
-
-@app.route("/update/course/<int:course_id>", methods=["POST"])
-def update_course(course_id):
-    user = get_logged_in_user(db)
-    if not user:
-        return redirect("/login")
-
-    # ensure that the user 1. owns the course 2. is a teacher
-
-    query = "SELECT 1 FROM tl_course WHERE user_id = :user_id AND id = :id"
-    is_own = db.session.execute(
-        text(query), {"user_id": user.id, "id": course_id}
-    ).fetchone()
-
-    if not user.is_teacher or not is_own:
-        return "403: Forbidden", 403
-
-    # ensure that all the necessary data is present and valid
-
-    name = request.form.get("name", None)
-    description = request.form.get("description", "")
-
-    if not name or len(name) == 0:
-        return "400: Bad Request", 400
-
-    # do it
-
-    query = (
-        "UPDATE tl_course SET name = :name, description = :description WHERE id = :id"
-    )
-    db.session.execute(
-        text(query), {"id": course_id, "name": name, "description": description}
-    )
-    db.session.commit()
-
-    redirect_url = request.form.get("redirect_url", None)
-    if redirect_url:
-        return redirect(redirect_url)
-
-    return redirect("/")
-
-
-@app.route("/add/course", methods=["POST"])
-def add_course():
-    user = get_logged_in_user(db)
-    if not user:
-        return redirect("/login")
-
-    if not user.is_teacher:
-        return "403: Forbidden", 403
-
-    query = "INSERT INTO tl_course (user_id, name) VALUES (:user_id, 'Uusi kurssi') RETURNING id"
-    course = db.session.execute(text(query), {"user_id": user.id}).fetchone()
-    if not course:
-        return "500: Internal Server Error", 500
-
-    db.session.commit()
-
-    return redirect(f"/dashboard?course={course.id}")
 
 
 @app.route("/update/article/<int:article_id>", methods=["POST"])

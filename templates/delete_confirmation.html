@@ -1,0 +1,15 @@
+{% extends "layout.html" %} {% block title %}Poistetaanko{% endblock %} {% block
+content %}
+<div class="delete-confirmation">
+    <h3>Poistetaanko {{item_title}}?</h3>
+    <p>Kyseinen toiminto on peruuttamaton.</p>
+    <form action="{{action}}" method="post">
+        <div class="buttons">
+            <a href="{{return_url}}" class="btn">Takaisin</a>
+            <input type="hidden" name="confirmed" value="yes" />
+            <input type="hidden" name="redirect_url" value="{{return_url}}" />
+            <input type="submit" value="Poista" class="danger" />
+        </div>
+    </form>
+</div>
+{% endblock %}

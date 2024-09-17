@@ -4,6 +4,7 @@
     --color-blue: #4b7bec;
     --color-green: #20bf6b;
     --color-red: #eb3b5a;
+    --color-red-dark: #d12c49;
     --color-blue-dark: #3867d6;
     --color-lightgray: #d1d8e0;
     --color-lightergray: #e1e7ed;
@@ -66,6 +67,14 @@ input[type='submit']:hover {
     background-color: var(--color-lightergray);
 }
 
+.danger {
+    background-color: var(--color-red) !important;
+}
+
+.danger:hover {
+    background-color: var(--color-red-dark) !important;
+}
+
 nav {
     display: flex;
     align-items: center;
@@ -74,6 +83,7 @@ nav {
     position: sticky;
     top: 0;
     height: 3em;
+    z-index: 10;
 }
 
 nav .course-title {

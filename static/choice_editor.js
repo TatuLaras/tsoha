@@ -10,7 +10,9 @@ const choiceIsCorrectInput = document.querySelector('#choice-iscorrect-input');
 function choiceEntry(i, choice) {
     const contents = `
             <div class="label">${choice.label}</div>
-            <button class="delete" onclick="deleteChoice(event, ${i})"><i class="fa-solid fa-trash"></i></button>
+            <button class="delete" onclick="deleteChoice(event, ${i})" title="Poista vaihtoehto">
+                <i class="fa-solid fa-trash"></i>
+            </button>
         `;
 
     const parent = document.createElement('div');
