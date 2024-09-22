@@ -100,6 +100,7 @@
 
 .exercise .choices label {
     cursor: pointer;
+    margin: 0;
 }
 
 .exercise input[type='radio'] {

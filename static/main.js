@@ -19,4 +19,9 @@ function routeWithOldParams(route) {
     window.location.href = route + '?' + queryParams.toString();
 }
 
+function link(e, url) {
+    e.preventDefault();
+    window.location.href = url;
+}
+
 const articleElement = document.querySelector('#article-content');

@@ -1,0 +1,46 @@
+.dashboard-stats .grid-container {
+    display: grid;
+    grid-template-columns: 20em 10em;
+    gap: 0.4em;
+    overflow: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 2em;
+}
+
+.dashboard-stats .grid-container > * {
+    padding: 0.4em 0.6em;
+}
+
+.dashboard-stats .name {
+    font-weight: 500;
+    word-wrap: break-word;
+}
+
+.dashboard-stats .label {
+    font-weight: 500;
+    position: sticky;
+    left: 0;
+    background-color: white;
+}
+
+.dashboard-stats .stat {
+    background-color: var(--color-lightergray);
+    border-radius: 0.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+}
+
+.dashboard-stats .stat.completed::before {
+    content: '';
+    display: block;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    background-color: var(--color-green);
+}

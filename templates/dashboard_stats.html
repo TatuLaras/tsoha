@@ -1,0 +1,40 @@
+{% extends "layout.html" %} {% block title %}Kurssitilastot{% endblock %} {%
+block content %}
+<div class="dashboard-stats">
+    {% if not course_users or not exercise_stats %}
+    <div class="text-disabled">Ei vielä tilastoitavaa.</div>
+    {% else %}
+    <div
+        class="grid-container"
+        style="grid-template-columns: 20em {{'8em ' * course_users|length}}"
+    >
+        <div class="label"></div>
+
+        {% for course_user in course_users %}
+        <div class="name">{{course_user.username}}</div>
+        {% endfor %}
+
+        <div class="label"></div>
+
+        {% for course_user in course_users %}
+        <div class="stat">{{( course_user.percentage * 100) | round(1)}} %</div>
+        {% endfor %} {{( '
+        <div></div>
+        ' * (course_users|length + 1) ) | safe}} {% for exercise_stat in
+        exercise_stats %} {% if exercise_stat.course_article_id !=
+        exercise_stats[loop.index - 1].course_article_id %} {{( '
+        <div></div>
+        ' * (course_users|length + 1) ) | safe}} {% endif %}
+        <div class="label" title="{{exercise_stat.title}}">
+            {{exercise_stat.question}}
+        </div>
+
+        {% for course_user in course_users %}
+        <div
+            class="stat {{'completed' if course_user.id in exercise_stat.users else ''}}"
+        ></div>
+        {% endfor %} {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

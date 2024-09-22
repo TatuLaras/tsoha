@@ -154,3 +154,100 @@ def dashboard():
         current_exercise=current_exercise,
         inspector_item=inspector_item,
     )
+
+
+@app.route("/dashboard/stats/<int:course_id>", methods=["GET"])
+def dashboard_stats(course_id):
+    user = get_logged_in_user(db)
+    if not user:
+        return redirect("/login")
+
+    query = "SELECT 1 FROM tl_course WHERE user_id = :user_id AND id = :id"
+    is_own = db.session.execute(
+        text(query), {"user_id": user.id, "id": course_id}
+    ).fetchone()
+
+    if not user.is_teacher or not is_own:
+        return "403: Forbidden", 403
+
+    query = """
+        SELECT * FROM 
+        (
+            SELECT 
+                'text' AS type,
+                et.id AS exercise_id,
+                et.question,
+                MAX(ca.id) AS course_article_id,
+                MAX(ca.title) AS title,
+                MAX(ca.ordering) AS ordering,
+                ARRAY_AGG(p.user_id) AS users
+
+            FROM tl_exercise_text AS et
+
+            LEFT JOIN tl_course_article AS ca
+            ON ca.id = et.course_article_id
+
+            LEFT JOIN tl_points AS p
+            ON p.type = 1 AND p.point = et.id
+
+            WHERE ca.course_id = :course_id
+
+            GROUP BY et.id
+
+
+            UNION
+
+
+            SELECT 
+                'choice' AS type,
+                ec.id AS exercise_id,
+                ec.question,
+                MAX(ca.id) AS course_article_id,
+                MAX(ca.title) AS title,
+                MAX(ca.ordering) AS ordering,
+                ARRAY_AGG(p.user_id) AS users
+
+            FROM tl_exercise_choice AS ec
+
+            LEFT JOIN tl_course_article AS ca
+            ON ca.id = ec.course_article_id
+
+            LEFT JOIN tl_points AS p
+            ON p.type = 2 AND p.point = ec.id
+
+            WHERE ca.course_id = :course_id
+
+            GROUP BY ec.id
+
+        ) AS result
+
+        ORDER BY ordering ASC, course_article_id ASC, exercise_id ASC
+    """
+
+    exercise_stats = db.session.execute(
+        text(query), {"course_id": course_id}
+    ).fetchall()
+
+    query = """
+        SELECT 
+            u.id, u.username,
+            "percentage"(u.id, :course_id) AS percentage
+
+        FROM tl_course_user AS cu
+
+        LEFT JOIN tl_user AS u
+        ON u.id = cu.user_id
+
+        WHERE cu.course_id = :course_id
+    """
+
+    course_users = db.session.execute(text(query), {"course_id": course_id}).fetchall()
+
+    print(exercise_stats)
+
+    return render_template(
+        "dashboard_stats.html",
+        user=user,
+        exercise_stats=exercise_stats,
+        course_users=course_users,
+    )

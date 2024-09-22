@@ -5,6 +5,31 @@ from flask import json, redirect, request, session, render_template
 from sqlalchemy import text
 
 
+def is_authorized(user, exercise_type, exercise_id):
+    if exercise_type not in ["text", "choice"]:
+        return False
+
+    table = f"tl_exercise_{exercise_type}"
+
+    query = f"""
+        SELECT 1 
+
+        FROM {table} AS e
+
+        LEFT JOIN tl_course_article AS ca
+        ON ca.id = e.course_article_id
+
+        LEFT JOIN tl_course AS c 
+        ON c.id = ca.course_id 
+
+        WHERE e.id = :id AND c.user_id = :user_id
+    """
+
+    return db.session.execute(
+        text(query), {"id": exercise_id, "user_id": user.id}
+    ).fetchone()
+
+
 @app.route("/answer/<int:exercise_id>", methods=["POST"])
 def answer(exercise_id):
     #  NOTE: exercise_id is either exercise_choice_id or exercise_text_id,
@@ -87,26 +112,7 @@ def update_exercise_text(exercise_id):
     if not user:
         return redirect("/login")
 
-    # ensure that the user is a teacher and owns the course the exercise belongs to
-
-    query = """
-        SELECT 1 
-
-        FROM tl_exercise_text AS et
-
-        LEFT JOIN tl_course_article AS ca
-        ON ca.id = et.course_article_id
-
-
-        LEFT JOIN tl_course AS c 
-        ON c.id = ca.course_id 
-
-        WHERE et.id = :id AND c.user_id = :user_id
-    """
-
-    is_own = db.session.execute(
-        text(query), {"id": exercise_id, "user_id": user.id}
-    ).fetchone()
+    is_own = is_authorized(user, "text", exercise_id)
 
     if not user.is_teacher or not is_own:
         return "403: Forbidden", 403
@@ -139,23 +145,7 @@ def update_exercise_choice(exercise_id):
 
     # ensure that the user is a teacher and owns the course the exercise belongs to
 
-    query = """
-        SELECT 1 
-
-        FROM tl_exercise_choice AS ec
-
-        LEFT JOIN tl_course_article AS ca
-        ON ca.id = ec.course_article_id
-
-        LEFT JOIN tl_course AS c 
-        ON c.id = ca.course_id 
-
-        WHERE ec.id = :id AND c.user_id = :user_id
-    """
-
-    is_own = db.session.execute(
-        text(query), {"id": exercise_id, "user_id": user.id}
-    ).fetchone()
+    is_own = is_authorized(user, "choice", exercise_id)
 
     if not user.is_teacher or not is_own:
         return "403: Forbidden", 403
@@ -291,25 +281,7 @@ def delete_exercise(exercise_type, exercise_id):
     if not user:
         return redirect("/login")
 
-    # ensure that the user is a teacher and owns the course
-
-    query = f"""
-        SELECT 1 
-
-        FROM {table} AS e
-
-        LEFT JOIN tl_course_article AS ca
-        ON ca.id = e.course_article_id
-
-        LEFT JOIN tl_course AS c 
-        ON c.id = ca.course_id 
-
-        WHERE e.id = :id AND c.user_id = :user_id
-    """
-
-    is_own = db.session.execute(
-        text(query), {"id": exercise_id, "user_id": user.id}
-    ).fetchone()
+    is_own = is_authorized(user, exercise_type, exercise_id)
 
     if not user.is_teacher or not is_own:
         return "403: Forbidden", 403

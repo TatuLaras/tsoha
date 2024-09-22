@@ -157,16 +157,22 @@
                 class="item {% if course.id == current_course.id %}selected{% endif %}"
             >
                 <span>{{course.name}}</span>
-                <form action="/course/delete/{{course.id}}" method="post">
-                    <input 
-                        type="hidden" 
-                        name="redirect_url" 
-                        value="/dashboard">
-
-                    <button class="delete" type="submit" title="Poista kurssi">
-                        <i class="fa-solid fa-trash"></i>
+                <div class="buttons">
+                    <button class="teacher-stats" title="Näytä tilastot" onclick="link(event, '/dashboard/stats/{{course.id}}')">
+                        <i class="fa-solid fa-chart-simple"></i>
                     </button>
-                </form>
+                    
+                    <form action="/course/delete/{{course.id}}" method="post">
+                        <input 
+                            type="hidden" 
+                            name="redirect_url" 
+                            value="/dashboard">
+
+                        <button class="delete" type="submit" title="Poista kurssi">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
             </a>
             {% else %}
             <div class="text-disabled">Ei kursseja.</div>
@@ -194,7 +200,7 @@
                     <input 
                         type="hidden" 
                         name="redirect_url" 
-                        value="/dashboard">
+                        value="/dashboard?course={{current_course.id}}">
 
                     <button class="delete" type="submit" title="Poista artikkeli">
                         <i class="fa-solid fa-trash"></i>
@@ -241,7 +247,7 @@
                     <input 
                         type="hidden" 
                         name="redirect_url" 
-                        value="/dashboard">
+                        value="/dashboard?course={{current_course.id}}&article={{current_article.id}}">
 
                     <button class="delete" type="submit" title="Poista artikkeli">
                         <i class="fa-solid fa-trash"></i>

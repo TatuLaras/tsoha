@@ -212,24 +212,52 @@
     align-items: center;
 }
 
-.dashboard .list .item button.delete {
+.dashboard .list .item button {
     border: none;
     background-color: white;
     padding-right: 0;
 }
 
 .choice:hover button.delete,
-.dashboard .list .item:hover button.delete {
+.dashboard .list .item:hover button {
     opacity: 1;
     pointer-events: inherit;
 }
 
+button.teacher-stats,
 button.delete {
     border-radius: 0.2rem;
     opacity: 0;
     pointer-events: none;
     color: var(--color-red);
-    transition: opacity 0.1s ease-out;
+    transition:
+        opacity 0.1s ease-out,
+        background 0.1s ease-out;
+    height: 100%;
+}
+
+button.delete:hover {
+    color: var(--color-red-dark);
+}
+
+button.teacher-stats {
+    color: var(--color-blue);
+}
+
+button.teacher-stats:hover {
+    color: var(--color-blue-dark);
+}
+
+.dashboard .list .item .buttons > * {
+    position: relative;
+}
+
+.dashboard .list .item .buttons {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
 }
 
 @media (max-width: 1028px) {
