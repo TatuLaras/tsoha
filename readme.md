@@ -31,7 +31,12 @@ Projektin juuressa on oltava `.env` -niminen tiedosto, jossa on seuraavat tiedot
 - `SESSION_SECRET`, vapaavalintainen vaikeasti arvattava merkkijono
 
 ### Python-riippuvuudet
-TODO
+
+Projektin käyttämät kirjastot ovat projektin juuressa olevassa `requirements.txt` -tiedostossa. Voit asentaa ne seuraavasti:
+
+```
+$ pip install -r requirements.txt
+```
 
 ### Opettaja-tilit
 

@@ -23,6 +23,7 @@
 
 .course-page .content {
     min-width: 16em;
+    width: 100%;
     max-width: 50em;
 
     font-size: var(--font-size);
@@ -70,6 +71,7 @@
 .exercise .question {
     padding-top: 2em;
     padding-left: 2em;
+    padding-right: 2em;
     font-weight: 500;
     font-size: 1.1em;
 }

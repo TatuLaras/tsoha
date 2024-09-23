@@ -9,6 +9,7 @@
     right: 0;
     bottom: 0;
     padding: 2em;
+    align-content: start;
 }
 
 .dashboard-stats .grid-container > * {
