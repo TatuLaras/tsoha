@@ -29,6 +29,7 @@
                     >{{inspector_item.2.description if inspector_item.2.description else ''}}</textarea>
                 </div>
 
+                <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
                 <input 
                     type="hidden" 
                     name="redirect_url" 
@@ -65,6 +66,7 @@
                     >{{inspector_item.2.content}}</textarea>
                 </div>
 
+                <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
                 <input 
                     type="hidden" 
                     name="redirect_url" 
@@ -92,6 +94,7 @@
                         type="text" name="answer" id="answer">
                 </div>
 
+                <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
                 <input 
                     type="hidden" 
                     name="redirect_url" 
@@ -127,6 +130,7 @@
 
                 <input type="hidden" name="choices" value="" id="choices-data">
 
+                <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
                 <input 
                     type="hidden" 
                     name="redirect_url" 
@@ -146,6 +150,7 @@
 
     <div class="col">
         <form class="add-btn" method="post" action="/course">
+            <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
             <button type="submit" title="Luo kurssi"><i class="fa-solid fa-plus"></i></button>
         </form>
 
@@ -163,6 +168,7 @@
                     </button>
                     
                     <form action="/course/delete/{{course.id}}" method="post">
+                        <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
                         <input 
                             type="hidden" 
                             name="redirect_url" 
@@ -183,6 +189,7 @@
     <div class="col">
         {% if current_course %}
         <form class="add-btn" method="post" action="/article">
+            <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
             <input type="hidden" name="course_id" value="{{current_course.id}}">
             <button type="submit" title="Luo artikkeli"><i class="fa-solid fa-plus"></i></button>
         </form>
@@ -197,6 +204,7 @@
             >
                 <span>{{article.title}}</span>
                 <form action="/article/delete/{{article.id}}" method="post">
+                    <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
                     <input 
                         type="hidden" 
                         name="redirect_url" 
@@ -219,12 +227,14 @@
         <div class="multi-btn">
             <div class="initial"><i class="fa-solid fa-plus"></i></div>
             <form method="post" action="/exercise" class="exercise-text">
+                <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
                 <input type="hidden" name="article_id" value="{{current_article.id}}">
                 <input type="hidden" name="course_id" value="{{current_course.id}}">
                 <input type="hidden" name="type" value="text">
                 <button type="submit" title="Luo tekstitehtävä"><i class="fa-solid fa-font"></i></button>
             </form>
             <form method="post" action="/exercise" class="exercise-choice">
+                <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
                 <input type="hidden" name="article_id" value="{{current_article.id}}">
                 <input type="hidden" name="course_id" value="{{current_course.id}}">
                 <input type="hidden" name="type" value="choice">
@@ -244,6 +254,7 @@
                 <span><i class="fa-solid {{ 'fa-list-ul' if exercise.type == 'choice' else 'fa-font' }}"></i>{{exercise.question}}</span>
 
                 <form action="/exercise/{{exercise.type}}/delete/{{exercise.id}}" method="post">
+                    <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
                     <input 
                         type="hidden" 
                         name="redirect_url" 

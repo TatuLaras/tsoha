@@ -1,3 +1,4 @@
+from flask_wtf import CSRFProtect
 from flask import Flask
 from flask import redirect, render_template, request, session
 from flask_sqlalchemy import SQLAlchemy
@@ -10,6 +11,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DB_URL")
 app.secret_key = getenv("SESSION_SECRET")
 
 db = SQLAlchemy(app)
+csrf = CSRFProtect(app)
 
 
 @app.route("/")

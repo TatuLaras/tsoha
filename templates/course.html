@@ -32,6 +32,7 @@ block course_title %}{{course.name}}{% endblock %} {% block content %}
                 <div class="top"></div>
                 <div class="question">{{text_exercise.question}}</div>
                 <form action="/answer/{{text_exercise.id}}" method="post">
+                    <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
                     <input type="text" name="answer" />
                     <input
                         type="hidden"
@@ -57,6 +58,7 @@ block course_title %}{{course.name}}{% endblock %} {% block content %}
                 <div class="top"></div>
                 <div class="question">{{choice_exercise.0.question}}</div>
                 <form action="/answer/{{choice_exercise.0.id}}" method="post">
+                    <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
                     <div class="choices">
                         {% for choice in choice_exercise.1 %}
                         <div>

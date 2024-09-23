@@ -1,3 +1,5 @@
+# A tool to manage who's a teacher
+
 from flask import Flask
 from os import getenv
 from sqlalchemy import text
@@ -17,6 +19,7 @@ while True:
 
         choice = input("\n( A / B ): ").lower().strip()
 
+        # New teacher
         if choice == "a":
             username = input("Käyttäjänimi: ").strip()
 
@@ -33,6 +36,7 @@ while True:
             print("\nToiminto suoritettu.")
             break
 
+        # Remove teacher
         if choice == "b":
             query = "SELECT id, username FROM tlaras.user WHERE is_teacher = TRUE"
             teachers = db.session.execute(text(query)).fetchall()

@@ -6,6 +6,8 @@ content %}
     <form action="{{action}}" method="post">
         <div class="buttons">
             <a href="{{return_url}}" class="btn">Takaisin</a>
+
+            <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
             <input type="hidden" name="confirmed" value="yes" />
             <input type="hidden" name="redirect_url" value="{{return_url}}" />
             <input type="submit" value="Poista" class="danger" />
