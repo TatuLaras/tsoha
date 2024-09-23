@@ -5,6 +5,7 @@ from flask import json, redirect, request, session, render_template
 from sqlalchemy import text
 
 
+# check that the user owns the course the exercise is a part of
 def is_authorized(user, exercise_type, exercise_id):
     if exercise_type not in ["text", "choice"]:
         return False
