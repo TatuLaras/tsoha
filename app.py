@@ -23,14 +23,14 @@ def index():
         SELECT 
         c.id, c.name, c.description,
         u.username AS creator,
-        "percentage"(:user_id, cu.course_id) AS percentage
+        tlaras."percentage"(:user_id, cu.course_id) AS percentage
 
-        FROM tl_course_user AS cu 
+        FROM tlaras.course_user AS cu 
 
-        LEFT JOIN tl_course AS c 
+        LEFT JOIN tlaras.course AS c 
         ON c.id = cu.course_id 
 
-        LEFT JOIN tl_user AS u
+        LEFT JOIN tlaras.user AS u
         ON u.id = c.user_id
 
         WHERE cu.user_id = :user_id
@@ -44,11 +44,12 @@ def index():
 
     query = """
         SELECT 
-        c.id, c.name, c.description 
+        c.id, c.name, c.description,
+        u.username AS creator
 
-        FROM tl_course AS c 
+        FROM tlaras.course AS c 
 
-        LEFT JOIN tl_user AS u 
+        LEFT JOIN tlaras.user AS u 
         ON u.id = c.user_id
 
         ORDER BY c.id DESC

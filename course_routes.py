@@ -19,7 +19,7 @@ def course(course_id):
 
     # check if user is on course, if not show the join page instead of the actual course page
 
-    query = "SELECT 1 FROM tl_course_user WHERE user_id = :user_id AND course_id = :course_id"
+    query = "SELECT 1 FROM tlaras.course_user WHERE user_id = :user_id AND course_id = :course_id"
     has_joined = db.session.execute(
         text(query), {"user_id": user.id, "course_id": course_id}
     ).fetchone()
@@ -33,7 +33,7 @@ def course(course_id):
     query = """
         SELECT id, title 
 
-        FROM tl_course_article 
+        FROM tlaras.course_article 
         WHERE course_id = :course_id 
         ORDER BY ordering ASC, id ASC
     """
@@ -48,9 +48,7 @@ def course(course_id):
     article_id = request.args.get("article", 0)
 
     if article_id != 0:
-        query = (
-            "SELECT id, ordering, title, content FROM tl_course_article WHERE id = :id"
-        )
+        query = "SELECT id, ordering, title, content FROM tlaras.course_article WHERE id = :id"
         current_article = db.session.execute(text(query), {"id": article_id}).fetchone()
 
         # text exercises
@@ -62,9 +60,9 @@ def course(course_id):
             THEN 0 ELSE 1
             END AS completed
 
-            FROM tl_exercise_text AS e
+            FROM tlaras.exercise_text AS e
 
-            LEFT JOIN tl_points AS p
+            LEFT JOIN tlaras.points AS p
             ON p.user_id = :user_id AND p.point = e.id AND p.type = 1
 
             WHERE e.course_article_id = :course_article_id
@@ -82,9 +80,9 @@ def course(course_id):
             THEN 0 ELSE 1
             END AS completed
 
-            FROM tl_exercise_choice AS e
+            FROM tlaras.exercise_choice AS e
 
-            LEFT JOIN tl_points AS p
+            LEFT JOIN tlaras.points AS p
             ON p.user_id = :user_id AND p.point = e.id AND p.type = 2
 
             WHERE e.course_article_id = :course_article_id
@@ -94,7 +92,7 @@ def course(course_id):
         ).fetchall()
 
         for question in questions:
-            query = "SELECT id, label, is_correct FROM tl_exercise_choice_option WHERE exercise_choice_id = :exercise_choice_id"
+            query = "SELECT id, label, is_correct FROM tlaras.exercise_choice_option WHERE exercise_choice_id = :exercise_choice_id"
             choices = db.session.execute(
                 text(query), {"exercise_choice_id": question.id}
             ).fetchall()
@@ -127,7 +125,7 @@ def join(course_id):
     # register user for course and redirect to course page
 
     query = """
-        INSERT INTO tl_course_user (user_id, course_id) 
+        INSERT INTO tlaras.course_user (user_id, course_id) 
         VALUES (:user_id, :course_id)
         ON CONFLICT DO NOTHING
     """
@@ -153,12 +151,12 @@ def stats(course_id):
         (
             SELECT COUNT(*)
 
-            FROM tl_points AS p
+            FROM tlaras.points AS p
 
-            LEFT JOIN tl_exercise_text AS set
+            LEFT JOIN tlaras.exercise_text AS set
             ON set.id = p.point AND p.type = 1
 
-            LEFT JOIN tl_exercise_choice AS sec
+            LEFT JOIN tlaras.exercise_choice AS sec
             ON sec.id = p.point AND p.type = 2
 
             WHERE p.user_id = :user_id AND 
@@ -166,15 +164,42 @@ def stats(course_id):
         ) 
         AS DECIMAL)
         /
-        COUNT(*) 
+        GREATEST( 
+            ( 
+                (
+                SELECT 
+                    COUNT(s_et.id)
+
+                FROM tlaras.course_article AS s_ca
+
+                LEFT JOIN tlaras.exercise_text AS s_et
+                ON s_et.course_article_id = s_ca.id
+
+                WHERE s_ca.id = ca.id
+
+                )
+                +
+                ( 
+                SELECT 
+                    COUNT(s_ec.id)
+
+                FROM tlaras.course_article AS s_ca
+
+                LEFT JOIN tlaras.exercise_choice AS s_ec
+                ON s_ec.course_article_id = s_ca.id
+
+                WHERE s_ca.id = ca.id
+                )
+             ), 1
+        )
         AS percentage
 
-        FROM tl_course_article AS ca 
+        FROM tlaras.course_article AS ca 
 
-        LEFT JOIN tl_exercise_text AS et
+        LEFT JOIN tlaras.exercise_text AS et
         ON et.course_article_id = ca.id
 
-        LEFT JOIN tl_exercise_choice AS ec
+        LEFT JOIN tlaras.exercise_choice AS ec
         ON ec.course_article_id = ca.id
 
         WHERE course_id = :course_id
@@ -198,7 +223,7 @@ def update_course(course_id):
 
     # ensure that the user 1. owns the course 2. is a teacher
 
-    query = "SELECT 1 FROM tl_course WHERE user_id = :user_id AND id = :id"
+    query = "SELECT 1 FROM tlaras.course WHERE user_id = :user_id AND id = :id"
     is_own = db.session.execute(
         text(query), {"user_id": user.id, "id": course_id}
     ).fetchone()
@@ -216,9 +241,7 @@ def update_course(course_id):
 
     # do it
 
-    query = (
-        "UPDATE tl_course SET name = :name, description = :description WHERE id = :id"
-    )
+    query = "UPDATE tlaras.course SET name = :name, description = :description WHERE id = :id"
     db.session.execute(
         text(query), {"id": course_id, "name": name, "description": description}
     )
@@ -240,7 +263,7 @@ def add_course():
     if not user.is_teacher:
         return "403: Forbidden", 403
 
-    query = "INSERT INTO tl_course (user_id, name) VALUES (:user_id, 'Uusi kurssi') RETURNING id"
+    query = "INSERT INTO tlaras.course (user_id, name) VALUES (:user_id, 'Uusi kurssi') RETURNING id"
     course = db.session.execute(text(query), {"user_id": user.id}).fetchone()
     if not course:
         return "500: Internal Server Error", 500
@@ -259,7 +282,7 @@ def delete_course(course_id):
 
     # ensure that the user is a teacher and owns the course
 
-    query = "SELECT 1 FROM tl_course WHERE id = :id AND user_id = :user_id"
+    query = "SELECT 1 FROM tlaras.course WHERE id = :id AND user_id = :user_id"
 
     is_own = db.session.execute(
         text(query), {"id": course_id, "user_id": user.id}
@@ -283,7 +306,7 @@ def delete_course(course_id):
             action=f"/course/delete/{course_id}",
         )
 
-    query = "DELETE FROM tl_course WHERE id = :id"
+    query = "DELETE FROM tlaras.course WHERE id = :id"
     db.session.execute(text(query), {"id": course_id})
     db.session.commit()
 

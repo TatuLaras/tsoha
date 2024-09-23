@@ -1,14 +1,15 @@
 from sqlalchemy import text
 
+
 def get_course(db, course_id):
     query = """
         SELECT 
         c.id, c.name, c.description, 
         u.username AS creator 
 
-        FROM tl_course AS c 
+        FROM tlaras.course AS c 
 
-        LEFT JOIN tl_user AS u 
+        LEFT JOIN tlaras.user AS u 
         ON u.id = c.user_id
 
         WHERE c.id = :course_id

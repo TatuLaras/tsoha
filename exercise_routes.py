@@ -9,17 +9,17 @@ def is_authorized(user, exercise_type, exercise_id):
     if exercise_type not in ["text", "choice"]:
         return False
 
-    table = f"tl_exercise_{exercise_type}"
+    table = f"tlaras.exercise_{exercise_type}"
 
     query = f"""
         SELECT 1 
 
         FROM {table} AS e
 
-        LEFT JOIN tl_course_article AS ca
+        LEFT JOIN tlaras.course_article AS ca
         ON ca.id = e.course_article_id
 
-        LEFT JOIN tl_course AS c 
+        LEFT JOIN tlaras.course AS c 
         ON c.id = ca.course_id 
 
         WHERE e.id = :id AND c.user_id = :user_id
@@ -62,7 +62,7 @@ def answer(exercise_id):
     if choice:
         query = """
             SELECT is_correct 
-            FROM tl_exercise_choice_option 
+            FROM tlaras.exercise_choice_option 
             WHERE exercise_choice_id = :exercise_id AND id = :answer
         """
         choice = db.session.execute(
@@ -73,7 +73,7 @@ def answer(exercise_id):
             is_correct = choice.is_correct
 
     else:
-        query = "SELECT 1 FROM tl_exercise_text WHERE id = :exercise_id AND answer = :answer"
+        query = "SELECT 1 FROM tlaras.exercise_text WHERE id = :exercise_id AND LOWER(answer) = LOWER(:answer)"
         is_correct = db.session.execute(
             text(query), {"exercise_id": exercise_id, "answer": answer}
         ).fetchone()
@@ -81,7 +81,7 @@ def answer(exercise_id):
     if is_correct:
         # register points
         query = """
-            INSERT INTO tl_points 
+            INSERT INTO tlaras.points 
             (user_id, type, point) 
             VALUES 
             (:user_id, :type, :point) 
@@ -127,7 +127,7 @@ def update_exercise_text(exercise_id):
 
     # do it
 
-    query = "UPDATE tl_exercise_text SET question = :question, answer = :answer WHERE id = :id"
+    query = "UPDATE tlaras.exercise_text SET question = :question, answer = :answer WHERE id = :id"
     db.session.execute(
         text(query), {"id": exercise_id, "question": question, "answer": answer}
     )
@@ -165,11 +165,11 @@ def update_exercise_choice(exercise_id):
 
     # do it
 
-    query = "UPDATE tl_exercise_choice SET question = :question WHERE id = :id"
+    query = "UPDATE tlaras.exercise_choice SET question = :question WHERE id = :id"
     db.session.execute(text(query), {"id": exercise_id, "question": question})
 
     # delete all old choices, just easier this way
-    query = "DELETE FROM tl_exercise_choice_option WHERE exercise_choice_id = :id"
+    query = "DELETE FROM tlaras.exercise_choice_option WHERE exercise_choice_id = :id"
     db.session.execute(text(query), {"id": exercise_id})
 
     if choices:
@@ -193,7 +193,7 @@ def update_exercise_choice(exercise_id):
             values = f"{values}{comma}(:id, '{choice['label']}', {'TRUE' if choice['is_correct'] else 'FALSE'})"
 
         if len(values) != 0:
-            query = f"INSERT INTO tl_exercise_choice_option (exercise_choice_id, label, is_correct) VALUES {values}"
+            query = f"INSERT INTO tlaras.exercise_choice_option (exercise_choice_id, label, is_correct) VALUES {values}"
             db.session.execute(text(query), {"id": exercise_id})
 
     db.session.commit()
@@ -220,9 +220,9 @@ def add_exercise():
     query = """
         SELECT 1 
 
-        FROM tl_course_article AS a 
+        FROM tlaras.course_article AS a 
 
-        LEFT JOIN tl_course AS c 
+        LEFT JOIN tlaras.course AS c 
         ON c.id = a.course_id 
 
         WHERE a.id = :id AND c.user_id = :user_id
@@ -239,14 +239,14 @@ def add_exercise():
 
     if exercise_type == "text":
         query = """
-            INSERT INTO tl_exercise_text (course_article_id, question, answer)
+            INSERT INTO tlaras.exercise_text (course_article_id, question, answer)
             VALUES (:article_id, 'Uusi tekstitehtävä', '')
             RETURNING id
         """
 
     elif exercise_type == "choice":
         query = """
-            INSERT INTO tl_exercise_choice (course_article_id, question)
+            INSERT INTO tlaras.exercise_choice (course_article_id, question)
             VALUES (:article_id, 'Uusi monivalintatehtävä')
             RETURNING id
         """
@@ -275,7 +275,7 @@ def delete_exercise(exercise_type, exercise_id):
     if exercise_type not in ["text", "choice"]:
         return "404: Not Found", 404
 
-    table = f"tl_exercise_{exercise_type}"
+    table = f"tlaras.exercise_{exercise_type}"
 
     user = get_logged_in_user(db)
     if not user:

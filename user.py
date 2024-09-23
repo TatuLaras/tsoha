@@ -8,6 +8,6 @@ def is_logged_in() -> bool:
 
 def get_logged_in_user(db):
     user_id = session.get("user_id", 0)
-    query = "SELECT id, username, is_teacher FROM tl_user WHERE id = :user_id"
+    query = "SELECT id, username, is_teacher FROM tlaras.user WHERE id = :user_id"
     result = db.session.execute(text(query), {"user_id": user_id})
     return result.fetchone()

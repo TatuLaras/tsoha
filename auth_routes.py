@@ -26,7 +26,7 @@ def signup_post():
         )
 
     # check if username exists
-    query = "SELECT 1 FROM tl_user WHERE username = :username"
+    query = "SELECT 1 FROM tlaras.user WHERE username = :username"
     result = db.session.execute(text(query), {"username": username})
     username_exists = result.fetchone()
 
@@ -37,7 +37,7 @@ def signup_post():
 
     hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
 
-    query = "INSERT INTO tl_user (username, password) VALUES (:username, :password)"
+    query = "INSERT INTO tlaras.user (username, password) VALUES (:username, :password)"
     db.session.execute(
         text(query), {"username": username, "password": hashed_password.decode()}
     )
@@ -56,7 +56,7 @@ def login_post():
     username = request.form["username"]
     password = request.form["password"]
 
-    query = "SELECT id, username, password FROM tl_user WHERE username = :username"
+    query = "SELECT id, username, password FROM tlaras.user WHERE username = :username"
     result = db.session.execute(text(query), {"username": username})
     user = result.fetchone()
 

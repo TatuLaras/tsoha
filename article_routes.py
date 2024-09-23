@@ -18,7 +18,7 @@ def add_article():
 
     # ensure that the user is a teacher and owns the course
 
-    query = "SELECT 1 FROM tl_course WHERE id = :id AND user_id = :user_id"
+    query = "SELECT 1 FROM tlaras.course WHERE id = :id AND user_id = :user_id"
     is_own = db.session.execute(
         text(query), {"id": course_id, "user_id": user.id}
     ).fetchone()
@@ -26,7 +26,7 @@ def add_article():
     if not user.is_teacher or not is_own:
         return "403: Forbidden", 403
 
-    query = "INSERT INTO tl_course_article (course_id, title, content) VALUES (:course_id, 'Uusi artikkeli', '') RETURNING id"
+    query = "INSERT INTO tlaras.course_article (course_id, title, content) VALUES (:course_id, 'Uusi artikkeli', '') RETURNING id"
     article = db.session.execute(text(query), {"course_id": course_id}).fetchone()
     if not article:
         return "500: Internal Server Error", 500
@@ -47,9 +47,9 @@ def update_article(article_id):
     query = """
         SELECT 1 
 
-        FROM tl_course_article AS a 
+        FROM tlaras.course_article AS a 
 
-        LEFT JOIN tl_course AS c 
+        LEFT JOIN tlaras.course AS c 
         ON c.id = a.course_id 
 
         WHERE a.id = :id AND c.user_id = :user_id
@@ -79,7 +79,7 @@ def update_article(article_id):
     # do it
 
     query = """
-        UPDATE tl_course_article 
+        UPDATE tlaras.course_article 
         SET title = :title, content = :content, ordering = :ordering 
         WHERE id = :id
     """
@@ -107,9 +107,9 @@ def article_delete(article_id):
     query = """
         SELECT 1 
 
-        FROM tl_course_article AS a 
+        FROM tlaras.course_article AS a 
 
-        LEFT JOIN tl_course AS c 
+        LEFT JOIN tlaras.course AS c 
         ON c.id = a.course_id 
 
         WHERE a.id = :id AND c.user_id = :user_id
@@ -133,7 +133,7 @@ def article_delete(article_id):
             action=f"/article/delete/{article_id}",
         )
 
-    query = "DELETE FROM tl_course_article WHERE id = :id"
+    query = "DELETE FROM tlaras.course_article WHERE id = :id"
     db.session.execute(text(query), {"id": article_id})
     db.session.commit()
 

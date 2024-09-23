@@ -21,7 +21,9 @@ def dashboard():
     current_exercise_type = request.args.get("type", None)
 
     # get all courses
-    query = "SELECT id, name FROM tl_course WHERE user_id = :user_id ORDER BY id DESC"
+    query = (
+        "SELECT id, name FROM tlaras.course WHERE user_id = :user_id ORDER BY id DESC"
+    )
     courses = db.session.execute(text(query), {"user_id": user.id}).fetchall()
 
     # item that is shown in the leftmost inspector panel
@@ -47,7 +49,7 @@ def dashboard():
         # get articles of current course
         query = """
             SELECT id, course_id, title, content, ordering 
-            FROM tl_course_article 
+            FROM tlaras.course_article 
             WHERE course_id = :course_id 
             ORDER BY ordering ASC, id ASC
         """
@@ -62,7 +64,7 @@ def dashboard():
         # get current article
         query = """
             SELECT id, course_id, title, content, ordering 
-            FROM tl_course_article 
+            FROM tlaras.course_article 
             WHERE id = :id
         """
         current_article = db.session.execute(
@@ -78,7 +80,7 @@ def dashboard():
             END) AS question,
             'choice' AS type 
 
-            FROM tl_exercise_choice
+            FROM tlaras.exercise_choice
 
             WHERE course_article_id = :article_id
 
@@ -90,7 +92,7 @@ def dashboard():
             END) AS question,
             'text' AS type 
 
-            FROM tl_exercise_text
+            FROM tlaras.exercise_text
             WHERE course_article_id = :article_id
 
             ORDER BY type DESC, id ASC
@@ -105,14 +107,14 @@ def dashboard():
         # get current exercise
 
         if current_exercise_type == "choice":
-            query = "SELECT id, question FROM tl_exercise_choice WHERE id = :id"
+            query = "SELECT id, question FROM tlaras.exercise_choice WHERE id = :id"
             exercise = db.session.execute(
                 text(query), {"id": current_exercise_id}
             ).fetchone()
 
             query = """
                 SELECT label, is_correct
-                FROM tl_exercise_choice_option
+                FROM tlaras.exercise_choice_option
                 WHERE exercise_choice_id = :exercise_choice_id
             """
             choices = db.session.execute(
@@ -127,7 +129,9 @@ def dashboard():
             )
 
         else:
-            query = "SELECT id, question, answer FROM tl_exercise_text WHERE id = :id"
+            query = (
+                "SELECT id, question, answer FROM tlaras.exercise_text WHERE id = :id"
+            )
             exercise = db.session.execute(
                 text(query), {"id": current_exercise_id}
             ).fetchone()
@@ -162,7 +166,7 @@ def dashboard_stats(course_id):
     if not user:
         return redirect("/login")
 
-    query = "SELECT 1 FROM tl_course WHERE user_id = :user_id AND id = :id"
+    query = "SELECT 1 FROM tlaras.course WHERE user_id = :user_id AND id = :id"
     is_own = db.session.execute(
         text(query), {"user_id": user.id, "id": course_id}
     ).fetchone()
@@ -182,12 +186,12 @@ def dashboard_stats(course_id):
                 MAX(ca.ordering) AS ordering,
                 ARRAY_AGG(p.user_id) AS users
 
-            FROM tl_exercise_text AS et
+            FROM tlaras.exercise_text AS et
 
-            LEFT JOIN tl_course_article AS ca
+            LEFT JOIN tlaras.course_article AS ca
             ON ca.id = et.course_article_id
 
-            LEFT JOIN tl_points AS p
+            LEFT JOIN tlaras.points AS p
             ON p.type = 1 AND p.point = et.id
 
             WHERE ca.course_id = :course_id
@@ -207,12 +211,12 @@ def dashboard_stats(course_id):
                 MAX(ca.ordering) AS ordering,
                 ARRAY_AGG(p.user_id) AS users
 
-            FROM tl_exercise_choice AS ec
+            FROM tlaras.exercise_choice AS ec
 
-            LEFT JOIN tl_course_article AS ca
+            LEFT JOIN tlaras.course_article AS ca
             ON ca.id = ec.course_article_id
 
-            LEFT JOIN tl_points AS p
+            LEFT JOIN tlaras.points AS p
             ON p.type = 2 AND p.point = ec.id
 
             WHERE ca.course_id = :course_id
@@ -231,11 +235,11 @@ def dashboard_stats(course_id):
     query = """
         SELECT 
             u.id, u.username,
-            "percentage"(u.id, :course_id) AS percentage
+            tlaras."percentage"(u.id, :course_id) AS percentage
 
-        FROM tl_course_user AS cu
+        FROM tlaras.course_user AS cu
 
-        LEFT JOIN tl_user AS u
+        LEFT JOIN tlaras.user AS u
         ON u.id = cu.user_id
 
         WHERE cu.course_id = :course_id

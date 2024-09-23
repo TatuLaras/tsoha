@@ -11,7 +11,7 @@ Sovelluksen avulla voidaan järjestää verkkokursseja, joissa on tekstimateriaa
 - Opettaja pystyy lisäämään kurssille tekstimateriaalia ja tehtäviä. Tehtävä voi olla ainakin monivalinta tai tekstikenttä, johon tulee kirjoittaa oikea vastaus.
 - Opettaja pystyy näkemään kurssistaan tilaston, keitä opiskelijoita on kurssilla ja mitkä kurssin tehtävät kukin on ratkonut.
 
-[Lähde](https://hy-tsoha.github.io/materiaali/aiheen_valinta/#opetussovellus)
+{ Lähde }(https://hy-tsoha.github.io/materiaali/aiheen_valinta/#opetussovellus)
 
 ## Kuinka saan toimimaan?
 
@@ -22,13 +22,24 @@ Sovelluksen käyttämät skeemat, taulut ja funktiot löytyvät projektin juures
 $ psql < schema.sql
 ```
 
-Mikäli haluat esimerkkidataa, se löytyy projektin juuresta tiedostosta `sample.sql`. Sen tuonti onnistuu samalla tavalla.
+Mikäli haluat esimerkkidataa, se löytyy projektin juuresta tiedostosta `sample.sql`. Sen tuonti onnistuu samalla tavalla. Esimerkkidatan kurssisisältö on luotu Microsoft Copilotilla.
 
 ### Ympäristömuuttujat
 
-Projektin juuressa on oltava .env -tiedosto, jossa on seuraavat tiedot:
+Projektin juuressa on oltava `.env` -niminen tiedosto, jossa on seuraavat tiedot:
 - `DB_URL`, PostgreSQL-tietokantaan yhdistämiseen käyvä merkkijono / osoite
 - `SESSION_SECRET`, vapaavalintainen vaikeasti arvattava merkkijono
 
 ### Python-riippuvuudet
 TODO
+
+### Opettaja-tilit
+
+Helpoin tapa luoda tili opettajan oikeuksilla on luoda ensin tili sovelluksessa normaalisti, jonka jälkeen tili "ylennetään" opettajaksi joko suoraan tietokannasta käsin tai käyttämällä projektin juuressa olevaa opettajien hallinnointityökalua `manage_teachers.py`.
+
+Työkalua käytetään seuraavasti (`{ url }` korvataan tässä tietokannan osoitteella).
+```
+$ DB_URL="{ url }" python3 manage_teachers.py
+```
+
+Työkalulla voit joko ylentää käyttäjiä käyttäjänimen perusteella tai poistaa opettajan oikeudet joltain käyttäjältä.
