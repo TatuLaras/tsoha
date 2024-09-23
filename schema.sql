@@ -10,21 +10,21 @@ CREATE TABLE tlaras.user (
 
 CREATE TABLE tlaras.course (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL REFERENCES tlaras.user(id) ON DELETE CASCADE,
     description TEXT,
     name TEXT NOT NULL
 );
 
 CREATE TABLE tlaras.course_user (
     id SERIAL PRIMARY KEY,
-    course_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
+    course_id INTEGER NOT NULL REFERENCES tlaras.course(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES tlaras.user(id) ON DELETE CASCADE,
     UNIQUE (user_id, course_id)
 );
 
 CREATE TABLE tlaras.course_article (
     id SERIAL PRIMARY KEY,
-    course_id INTEGER NOT NULL,
+    course_id INTEGER NOT NULL REFERENCES tlaras.course(id) ON DELETE CASCADE,
     ordering INTEGER NOT NULL DEFAULT 0,
     title TEXT NOT NULL,
     content TEXT NOT NULL
@@ -32,27 +32,27 @@ CREATE TABLE tlaras.course_article (
 
 CREATE TABLE tlaras.exercise_text (
     id SERIAL PRIMARY KEY,
-    course_article_id INTEGER NOT NULL,
+    course_article_id INTEGER NOT NULL REFERENCES tlaras.course_article(id) ON DELETE CASCADE,
     question TEXT NOT NULL,
     answer TEXT NOT NULL
 );
 
 CREATE TABLE tlaras.exercise_choice (
     id SERIAL PRIMARY KEY,
-    course_article_id INTEGER NOT NULL,
+    course_article_id INTEGER NOT NULL REFERENCES tlaras.course_article(id) ON DELETE CASCADE,
     question TEXT NOT NULL
 );
 
 CREATE TABLE tlaras.exercise_choice_option (
     id SERIAL PRIMARY KEY,
-    exercise_choice_id INTEGER NOT NULL,
+    exercise_choice_id INTEGER NOT NULL REFERENCES tlaras.exercise_choice(id) ON DELETE CASCADE,
     label TEXT NOT NULL,
     is_correct BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE tlaras.points (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL REFERENCES tlaras.user(id) ON DELETE CASCADE,
     type INTEGER NOT NULL DEFAULT 0, -- 1 = text, 2 = choice
     point INTEGER,
     UNIQUE (point, type, user_id)
