@@ -13,7 +13,7 @@ Sovelluksen avulla voidaan järjestää verkkokursseja, joissa on tekstimateriaa
 
 [Lähde](https://hy-tsoha.github.io/materiaali/aiheen_valinta/#opetussovellus)
 
-## Toimimisen edellytykset
+## Toiminnan edellytykset
 
 ### Tietokanta
 Sovelluksen käyttämät skeemat, taulut ja funktiot löytyvät projektin juuresta tiedostosta `schema.sql`. Niiden tuonti onnistuu esimerkiksi näin:
@@ -26,8 +26,8 @@ Mikäli haluat esimerkkidataa, se löytyy projektin juuresta tiedostosta `sample
 
 ### Ympäristömuuttujat
 
-Projektin juuressa on oltava `.env` -niminen tiedosto, jossa on seuraavat tiedot:
-- `DB_URL`, PostgreSQL-tietokantaan yhdistämiseen käyvä merkkijono / osoite
+Projektin juuressa on oltava `.env` -tiedosto, jossa on seuraavat tiedot:
+- `DB_URL`, PostgreSQL-tietokannan osoite
 - `SESSION_SECRET`, vapaavalintainen vaikeasti arvattava merkkijono
 
 ### Python-riippuvuudet
@@ -58,7 +58,7 @@ Työkalulla voit joko ylentää käyttäjiä käyttäjänimen perusteella tai po
 
 ## Käynnistys
 
-Tarkista että edellisen kohdan kaikki vaatimukset täyttyvät. Sen jälkeen (Python-virtuaaliympäristö käytössä) sovellus käynnistyy esimerkiksi seuraavasti:
+Tarkista että edellisen kohdan kaikki vaatimukset täyttyvät. Sen jälkeen (kun Python-virtuaaliympäristö on käytössä) sovellus käynnistyy esimerkiksi seuraavasti:
 
 ```
 $ flask run
